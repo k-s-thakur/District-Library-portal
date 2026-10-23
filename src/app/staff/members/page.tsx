@@ -303,39 +303,39 @@ export default function StaffMembersPage() {
 
           <button
             onClick={() => setRegisterModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium transition cursor-pointer"
           >
             <UserPlus className="w-3.5 h-3.5" />
-            <span>+ Register member</span>
+            <span>Register Member</span>
           </button>
         </div>
       </div>
 
-      {/* 2. Top 4 Metric KPI Cards (Matching Photo 1) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-slate-900">3,218</div>
-          <div className="text-xs text-slate-500 mt-1">Active members</div>
+      {/* 2. Top 4 Metric KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-slate-900 tabular-nums">3,218</div>
+          <div className="text-xs text-slate-500 mt-0.5">Active Members</div>
         </div>
 
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-slate-900">146</div>
-          <div className="text-xs text-slate-500 mt-1">Renewals due this month</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-slate-900 tabular-nums">146</div>
+          <div className="text-xs text-slate-500 mt-0.5">Renewals Due This Month</div>
         </div>
 
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-rose-600">32</div>
-          <div className="text-xs text-slate-500 mt-1">Expired memberships</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-rose-600 tabular-nums">32</div>
+          <div className="text-xs text-slate-500 mt-0.5">Expired Memberships</div>
         </div>
 
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-teal-700">18</div>
-          <div className="text-xs text-slate-500 mt-1">New this week</div>
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-teal-700 tabular-nums">18</div>
+          <div className="text-xs text-slate-500 mt-0.5">New This Week</div>
         </div>
       </div>
 
-      {/* 3. Search and Filters Bar (Matching Photo 1) */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* 3. Search and Filters Bar */}
+      <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-96">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input

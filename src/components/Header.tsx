@@ -14,12 +14,9 @@ import {
   Compass,
   Bookmark,
   Building2,
-  Clock,
-  Sparkles,
-  Info,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 interface SessionUser {
   id: string;
@@ -39,6 +36,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const discoverRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const fetchUser = async () => {
     try {
@@ -54,11 +52,13 @@ export default function Header() {
     fetchUser();
   }, [pathname]);
 
-  // Close discover dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (discoverRef.current && !discoverRef.current.contains(event.target as Node)) {
         setDiscoverOpen(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -104,31 +104,28 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-xs">
-      {/* 1. Official Government Utility Bar */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 sm:px-8 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+    <header className="sticky top-0 z-50 bg-white border-b border-slate-200">
+      {/* 1. Official Government Utility Strip */}
+      <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 sm:px-8 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-teal-400"></span>
+          <span className="font-medium text-slate-200">
+            District Public Library · Public Access Catalogue
           </span>
-          <span className="font-medium text-slate-100">
-            सार्वजनिक ई-पुस्तकालय · Government Public Library
-          </span>
-          <span className="hidden md:inline text-slate-500">|</span>
+          <span className="hidden md:inline text-slate-600">|</span>
           <span className="hidden md:inline text-slate-400 font-mono text-[11px]">
-            National Digital Library Node · CGO Complex, New Delhi
+            National Digital Library Node
           </span>
         </div>
 
         {/* Quick Demo Role Switcher */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-slate-400 text-[11px] mr-1 hidden sm:inline">Role preview:</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-slate-400 text-[11px] mr-1 hidden sm:inline">Demo:</span>
           {[
-            { role: "MEMBER", label: "Citizen (Rahul)" },
-            { role: "LIBRARIAN", label: "Librarian (Patel)" },
+            { role: "MEMBER", label: "Citizen" },
+            { role: "LIBRARIAN", label: "Librarian" },
             { role: "ACCOUNTS_OPERATOR", label: "Accounts" },
-            { role: "SUPER_ADMIN", label: "Super Admin" },
+            { role: "SUPER_ADMIN", label: "Admin" },
           ].map((item) => {
             const active = currentUser?.role === item.role;
             return (
@@ -137,7 +134,7 @@ export default function Header() {
                 onClick={() => handleRoleQuickSwitch(item.role)}
                 className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
                   active
-                    ? "bg-teal-500 text-slate-950 font-bold"
+                    ? "bg-teal-500 text-slate-950 font-semibold"
                     : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
                 }`}
               >
@@ -148,84 +145,70 @@ export default function Header() {
         </div>
       </div>
 
-      {/* 2. Main Discovery Masthead */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-        {/* Library Brand Identity */}
+      {/* 2. Main Navigation Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        {/* Brand */}
         <div className="flex items-center gap-6 shrink-0">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-md group-hover:bg-teal-800 transition">
-              <Building2 className="w-6 h-6" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-lg bg-teal-700 text-white flex items-center justify-center group-hover:bg-teal-800 transition">
+              <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 group-hover:text-teal-700 transition">
-                  GPLMS
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-base sm:text-lg text-slate-900 group-hover:text-teal-700 transition">
+                  District Library
                 </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 bg-teal-100 text-teal-800 rounded">
+                <span className="text-[10px] font-semibold uppercase px-1.5 py-0.2 bg-teal-50 text-teal-700 border border-teal-200 rounded">
                   OPAC
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 hidden sm:block">
-                Online Public Access Catalogue
-              </p>
             </div>
           </Link>
 
-          {/* Discover Menu Dropdown */}
+          {/* Discover dropdown */}
           <div className="relative hidden md:block" ref={discoverRef}>
             <button
               onClick={() => setDiscoverOpen(!discoverOpen)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-teal-700 hover:bg-slate-50 transition cursor-pointer"
-              aria-expanded={discoverOpen}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-slate-700 hover:text-teal-700 hover:bg-slate-50 transition cursor-pointer"
             >
               <Compass className="w-4 h-4 text-teal-600" />
-              <span>Discover</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${discoverOpen ? "rotate-180" : ""}`} />
+              <span>Browse Categories</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${discoverOpen ? "rotate-180" : ""}`} />
             </button>
 
             {discoverOpen && (
-              <div className="absolute left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
-                <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  Catalogue Discovery
-                </div>
+              <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-slate-200 py-1.5 z-50 text-xs">
                 <Link
                   href="/categories"
                   onClick={() => setDiscoverOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 hover:bg-teal-50 hover:text-teal-900"
+                  className="flex items-center gap-2.5 px-3 py-2 text-slate-700 hover:bg-teal-50 hover:text-teal-900"
                 >
                   <BookOpen className="w-4 h-4 text-teal-600" />
-                  <div>
-                    <div className="font-medium">Browse All Categories</div>
-                    <div className="text-xs text-slate-500">Explore by subject taxonomy</div>
-                  </div>
+                  <span className="font-medium">All DDC Classifications</span>
                 </Link>
                 <Link
                   href="/search?sort=newest"
                   onClick={() => setDiscoverOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 hover:bg-teal-50 hover:text-teal-900"
+                  className="flex items-center gap-2.5 px-3 py-2 text-slate-700 hover:bg-teal-50 hover:text-teal-900"
                 >
                   <Sparkles className="w-4 h-4 text-amber-500" />
-                  <div>
-                    <div className="font-medium">Recently Added Titles</div>
-                    <div className="text-xs text-slate-500">Fresh catalogue acquisitions</div>
-                  </div>
+                  <span>Recently Added Titles</span>
                 </Link>
                 <div className="my-1 border-t border-slate-100" />
-                <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  Popular Classifications
+                <div className="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Popular Sections
                 </div>
                 {[
                   { label: "800 Literature & Classics", code: "LITERATURE" },
-                  { label: "500 Science & Astronomy", code: "SCIENCE" },
-                  { label: "004 Computing & Technology", code: "CS_TECH" },
-                  { label: "900 History & Heritage", code: "HISTORY" },
-                  { label: "340 Constitution & Law", code: "LAW_GOV" },
+                  { label: "500 Science & Technology", code: "SCIENCE" },
+                  { label: "004 Computing & IT", code: "CS_TECH" },
+                  { label: "900 History & Biography", code: "HISTORY" },
                 ].map((item) => (
                   <Link
                     key={item.code}
                     href={`/search?category=${item.code}`}
                     onClick={() => setDiscoverOpen(false)}
-                    className="block px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 hover:text-teal-700"
+                    className="block px-3 py-1.5 text-slate-600 hover:bg-slate-50 hover:text-teal-700"
                   >
                     {item.label}
                   </Link>
@@ -235,41 +218,39 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Global Search Bar (Dominant Header Action) */}
+        {/* Global Search Bar */}
         <form
           onSubmit={handleGlobalSearch}
-          className="flex-1 max-w-lg hidden sm:flex items-center relative"
+          className="flex-1 max-w-md hidden sm:flex items-center relative"
         >
           <div className="relative w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search catalogue by title, author, ISBN or subject..."
+              placeholder="Search books, authors, ISBN..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-24 py-2.5 rounded-full bg-slate-50 border border-slate-300 text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-all"
+              className="w-full pl-9 pr-20 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 transition"
             />
             <button
               type="submit"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-full text-xs font-semibold shadow-xs transition cursor-pointer"
+              className="absolute right-1 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-teal-700 hover:bg-teal-800 text-white rounded text-xs font-medium transition cursor-pointer"
             >
               Search
             </button>
           </div>
         </form>
 
-        {/* Navigation Links & Account Actions */}
+        {/* Navigation & Actions */}
         <div className="flex items-center gap-3">
-          <ThemeSwitcher />
-
-          <nav className="hidden lg:flex items-center gap-4 text-sm font-medium text-slate-600">
+          <nav className="hidden lg:flex items-center gap-3 text-sm text-slate-600">
             <Link href="/library-information" className="hover:text-teal-700 transition">
-              About & Timings
+              Info & Timings
             </Link>
             {isStaff && (
               <Link
-                href="/staff/circulation"
-                className="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs flex items-center gap-1.5 transition"
+                href="/staff/overview"
+                className="px-2.5 py-1 rounded-md bg-teal-50 border border-teal-200 text-teal-800 font-semibold text-xs flex items-center gap-1.5 hover:bg-teal-100 transition"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-teal-700" />
                 <span>Staff Portal</span>
@@ -279,26 +260,26 @@ export default function Header() {
 
           {/* User Account / Sign In */}
           {currentUser ? (
-            <div className="relative">
+            <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 transition text-slate-800 cursor-pointer"
+                className="flex items-center gap-2 pl-2.5 pr-2 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition text-slate-800 cursor-pointer"
               >
-                <div className="w-6 h-6 rounded-full bg-teal-700 text-white flex items-center justify-center text-xs font-bold">
+                <div className="w-6 h-6 rounded-full bg-teal-700 text-white flex items-center justify-center text-xs font-semibold">
                   {currentUser.name.charAt(0)}
                 </div>
-                <span className="text-xs font-semibold max-w-[100px] truncate">
+                <span className="text-xs font-medium max-w-[110px] truncate hidden sm:inline">
                   {currentUser.name}
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
-                  <div className="px-4 py-2 border-b border-slate-100">
-                    <p className="text-xs font-bold text-slate-900">{currentUser.name}</p>
+                <div className="absolute right-0 mt-1.5 w-52 bg-white rounded-lg shadow-lg border border-slate-200 py-1.5 z-50 text-xs">
+                  <div className="px-3 py-1.5 border-b border-slate-100">
+                    <p className="font-semibold text-slate-900 truncate">{currentUser.name}</p>
                     <p className="text-[11px] text-slate-500 truncate">{currentUser.email}</p>
-                    <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700">
+                    <span className="inline-block mt-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
                       {currentUser.role}
                     </span>
                   </div>
@@ -307,31 +288,22 @@ export default function Header() {
                     <Link
                       href="/account"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                      className="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-50"
                     >
-                      <Bookmark className="w-4 h-4 text-teal-600" />
-                      <span>My Borrowed Books & Dues</span>
+                      <Bookmark className="w-3.5 h-3.5 text-teal-600" />
+                      <span>My Loans & Dues</span>
                     </Link>
                   )}
 
                   {isStaff && (
-                    <>
-                      <Link
-                        href="/staff/circulation"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-teal-600" />
-                        <span>Circulation Desk</span>
-                      </Link>
-                      <Link
-                        href="/staff/finance"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                      >
-                        <span>Cash Receipts & Dues</span>
-                      </Link>
-                    </>
+                    <Link
+                      href="/staff/overview"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-50"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
+                      <span>Admin Dashboard</span>
+                    </Link>
                   )}
 
                   <div className="my-1 border-t border-slate-100" />
@@ -340,9 +312,9 @@ export default function Header() {
                       setUserMenuOpen(false);
                       handleLogout();
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-rose-600 hover:bg-rose-50 cursor-pointer"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
                   </button>
                 </div>
@@ -351,27 +323,27 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium transition"
             >
               <User className="w-3.5 h-3.5" />
-              <span>Member Sign In</span>
+              <span>Sign In</span>
             </Link>
           )}
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="sm:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100"
+            className="sm:hidden p-1.5 rounded-lg text-slate-600 hover:bg-slate-100"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-4">
+        <div className="sm:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-3">
           <form onSubmit={handleGlobalSearch} className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -379,24 +351,24 @@ export default function Header() {
               placeholder="Search books, authors, ISBN..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-lg bg-slate-100 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-sm focus:outline-none focus:ring-1 focus:ring-teal-600"
             />
           </form>
 
-          <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-700">
+          <nav className="flex flex-col space-y-1.5 text-sm font-medium text-slate-700">
             <Link
               href="/categories"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1.5 hover:text-teal-700"
             >
-              Browse All Categories
+              Browse Categories
             </Link>
             <Link
               href="/search"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1.5 hover:text-teal-700"
             >
-              Full Search Stacks
+              Search Catalogue
             </Link>
             <Link
               href="/library-information"
@@ -407,19 +379,14 @@ export default function Header() {
             </Link>
             {isStaff && (
               <Link
-                href="/staff/circulation"
+                href="/staff/overview"
                 onClick={() => setMobileMenuOpen(false)}
-                className="py-1.5 font-bold text-teal-700"
+                className="py-1.5 font-semibold text-teal-700"
               >
-                Staff Circulation Portal
+                Staff Portal
               </Link>
             )}
           </nav>
-
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Theme</span>
-            <ThemeSwitcher />
-          </div>
         </div>
       )}
     </header>
