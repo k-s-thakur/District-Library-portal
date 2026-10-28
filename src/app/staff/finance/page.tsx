@@ -174,17 +174,14 @@ export default function StaffFinancePage() {
         </div>
       )}
 
-      {/* 1. Header Section (Matching Photo 5 with Slate & Teal Theme) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <p className="text-[10px] tracking-widest uppercase font-semibold text-teal-700">
-            Collections & Receipts
-          </p>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mt-0.5">
-            Finance Desk
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            Finance & Receipts
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Review sample collections, outstanding charges and receipt activity.
+            Cash desk collection, overdue fines, digital receipts, and reversal audit trail.
           </p>
         </div>
 
@@ -192,7 +189,7 @@ export default function StaffFinancePage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium shadow-xs transition"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium shadow-xs transition cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
             <span>Export</span>
@@ -200,66 +197,11 @@ export default function StaffFinancePage() {
 
           <button
             onClick={() => setPaymentModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>+ Record payment</span>
           </button>
-        </div>
-      </div>
-
-      {/* 2. Featured Highlight Card (Matching Photo 5 in Slate & Teal Theme) */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center font-bold text-xl shadow-xs">
-            ₹
-          </div>
-          <div>
-            <p className="text-xs text-slate-500 font-medium">
-              Collected today - sample figures
-            </p>
-            <div className="text-3xl font-serif font-bold text-slate-900 mt-0.5">
-              ₹ 2,840
-            </div>
-          </div>
-        </div>
-
-        <div className="text-xs text-slate-500 flex items-center gap-3 sm:text-right">
-          <span className="font-medium text-slate-700">18 receipts</span>
-          <span className="text-teal-700 font-semibold flex items-center gap-0.5">
-            <TrendingUp className="w-3.5 h-3.5" /> 8.4%
-          </span>
-        </div>
-      </div>
-
-      {/* 3. Top 4 Metric KPI Cards (Matching Photo 5) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-            ₹ 18,620
-          </div>
-          <div className="text-xs text-slate-500 mt-1">Collected this month</div>
-        </div>
-
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-            ₹ 6,180
-          </div>
-          <div className="text-xs text-slate-500 mt-1">Outstanding dues</div>
-        </div>
-
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-            ₹ 120
-          </div>
-          <div className="text-xs text-slate-500 mt-1">Waivers recorded</div>
-        </div>
-
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-2xl sm:text-3xl font-serif font-bold text-teal-700">
-            0
-          </div>
-          <div className="text-xs text-slate-500 mt-1">Pending reconciliation</div>
         </div>
       </div>
 

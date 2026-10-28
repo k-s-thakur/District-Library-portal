@@ -86,17 +86,14 @@ export default function StaffOverviewPage() {
 
   return (
     <div className="space-y-6">
-      {/* 1. Header Greeting Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Greeting Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <p className="text-[10px] tracking-widest uppercase font-semibold text-teal-700">
-            Wednesday, 21 October 2026
-          </p>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mt-0.5">
-            Good morning, Administrator
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            Library Dashboard
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Here's what's happening across your library today.
+            Real-time circulation trends, stack copy distribution, and daily desk operations.
           </p>
         </div>
 
@@ -117,7 +114,7 @@ export default function StaffOverviewPage() {
 
           <button
             onClick={() => setTransactionModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>New transaction</span>
@@ -125,78 +122,7 @@ export default function StaffOverviewPage() {
         </div>
       </div>
 
-      {/* 2. Top 4 Metric KPI Cards (Matching Image 2 in Slate & Teal theme) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Catalogue titles */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
-            <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
-              <BookOpen className="w-4 h-4" />
-            </div>
-            <span>Catalogue titles</span>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-serif font-bold text-slate-900">8,426</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-teal-700 font-semibold">↗ +174</span>
-              <span>this month</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 2: Active members */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
-            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Users className="w-4 h-4" />
-            </div>
-            <span>Active members</span>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-serif font-bold text-slate-900">3,218</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-teal-700 font-semibold">↗ +38</span>
-              <span>this month</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 3: Books on loan */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
-            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
-            </div>
-            <span>Books on loan</span>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-serif font-bold text-slate-900">1,084</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-amber-700 font-semibold">🕒 32</span>
-              <span>due this week</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Collections today */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-              <IndianRupee className="w-4 h-4" />
-            </div>
-            <span>Collections today</span>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-serif font-bold text-slate-900">₹ 2,840</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-emerald-700 font-semibold">₹ 18 receipts</span>
-              <span>issued</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Middle 2 Panels (Library Activity & Copy Status) */}
+      {/* Primary Analytical Panels: Library Activity & Copy Status */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Panel: AT A GLANCE / Library activity (2 cols) */}
         <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col justify-between">

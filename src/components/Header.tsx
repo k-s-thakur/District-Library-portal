@@ -104,57 +104,14 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-xs">
-      {/* 1. Official Government Utility Bar */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 sm:px-8 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
-          </span>
-          <span className="font-medium text-slate-100">
-            सार्वजनिक ई-पुस्तकालय · Government Public Library
-          </span>
-          <span className="hidden md:inline text-slate-500">|</span>
-          <span className="hidden md:inline text-slate-400 font-mono text-[11px]">
-            National Digital Library Node · CGO Complex, New Delhi
-          </span>
-        </div>
-
-        {/* Quick Demo Role Switcher */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-slate-400 text-[11px] mr-1 hidden sm:inline">Role preview:</span>
-          {[
-            { role: "MEMBER", label: "Citizen (Rahul)" },
-            { role: "LIBRARIAN", label: "Librarian (Patel)" },
-            { role: "ACCOUNTS_OPERATOR", label: "Accounts" },
-            { role: "SUPER_ADMIN", label: "Super Admin" },
-          ].map((item) => {
-            const active = currentUser?.role === item.role;
-            return (
-              <button
-                key={item.role}
-                onClick={() => handleRoleQuickSwitch(item.role)}
-                className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
-                  active
-                    ? "bg-teal-500 text-slate-950 font-bold"
-                    : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 2. Main Discovery Masthead */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs">
+      {/* Main Discovery Masthead */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
         {/* Library Brand Identity */}
         <div className="flex items-center gap-6 shrink-0">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-md group-hover:bg-teal-800 transition">
-              <Building2 className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-xs group-hover:bg-teal-800 transition">
+              <Building2 className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">

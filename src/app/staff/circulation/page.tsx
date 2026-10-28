@@ -237,17 +237,14 @@ export default function StaffCirculationPage() {
         </div>
       )}
 
-      {/* 1. Header Section (Matching Photo 4 with Slate & Teal Theme) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <p className="text-[10px] tracking-widest uppercase font-semibold text-teal-700">
-            Loans & Returns
-          </p>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mt-0.5">
-            Circulation
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            Circulation Desk
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Manage issues, returns, renewals and reservation follow-ups.
+            Manage issues, returns, renewals, and reservation follow-ups.
           </p>
         </div>
 
@@ -255,7 +252,7 @@ export default function StaffCirculationPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => setScanModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium shadow-xs transition"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium shadow-xs transition cursor-pointer"
           >
             <Scan className="w-3.5 h-3.5 text-slate-500" />
             <span>Scan a book</span>
@@ -263,7 +260,7 @@ export default function StaffCirculationPage() {
 
           <button
             onClick={() => setIssueModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>+ Issue a book</span>
@@ -271,30 +268,7 @@ export default function StaffCirculationPage() {
         </div>
       </div>
 
-      {/* 2. Top 4 Metric KPI Cards (Matching Photo 4) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-slate-900">1,084</div>
-          <div className="text-xs text-slate-500 mt-1">Books on loan</div>
-        </div>
-
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-slate-900">92</div>
-          <div className="text-xs text-slate-500 mt-1">Due this week</div>
-        </div>
-
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-rose-600">12</div>
-          <div className="text-xs text-slate-500 mt-1">Overdue</div>
-        </div>
-
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
-          <div className="text-3xl font-serif font-bold text-slate-900">27</div>
-          <div className="text-xs text-slate-500 mt-1">Reservations waiting</div>
-        </div>
-      </div>
-
-      {/* Circulation Sub-Navigation Tabs (Integrating Old & New Features) */}
+      {/* Circulation Sub-Navigation Tabs */}
       <div className="flex border-b border-slate-200 gap-1 overflow-x-auto text-xs font-medium">
         <button
           onClick={() => setActiveTab("followups")}
