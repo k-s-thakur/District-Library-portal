@@ -4,9 +4,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Government Public Library · Online Public Access Catalogue (OPAC)",
+  title: "District Public Library · Online Public Access Catalogue & Portal",
   description:
-    "Discover books, check physical copy availability, shelf locations and explore curated collections across the Dewey Decimal Classification.",
+    "Search book holdings across the Dewey Decimal Classification, check real-time physical availability, shelf locations, and manage library services.",
 };
 
 export default function RootLayout({
@@ -15,19 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full scroll-smooth" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const t = localStorage.getItem('gplms-theme');
-                if (t) document.documentElement.setAttribute('data-theme', t);
-              } catch(e) {}
-            `,
-          }}
-        />
-      </head>
+    <html lang="en" className="h-full scroll-smooth">
       <body className="min-h-full flex flex-col font-sans antialiased bg-slate-50 text-slate-800">
         <Header />
         <main className="flex-1">{children}</main>

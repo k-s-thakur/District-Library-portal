@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BookOpen,
   Users,
@@ -11,20 +12,35 @@ import {
   ChevronDown,
   ArrowRight,
   RotateCcw,
-  BookMarked,
   UserPlus,
-  MoreHorizontal,
   TrendingUp,
+  Search,
+  Building2,
+  FileText,
 } from "lucide-react";
 import { useStaff } from "@/context/StaffContext";
 
 export default function StaffOverviewPage() {
+  const router = useRouter();
   const { setTransactionModalOpen } = useStaff();
   const [timeFilter, setTimeFilter] = useState("Today");
   const [activityFilter, setActivityFilter] = useState("Today");
-  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+  const [omniSearch, setOmniSearch] = useState("");
 
-  // SVG Chart data points for Library Activity
+  const handleOmniSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = omniSearch.trim();
+    if (!q) return;
+    if (q.toUpperCase().startsWith("MBR-") || q.toLowerCase().includes("member")) {
+      router.push(`/staff/members?q=${encodeURIComponent(q)}`);
+    } else if (q.toUpperCase().startsWith("RCP-") || q.toLowerCase().includes("receipt") || q.toLowerCase().includes("fine")) {
+      router.push(`/staff/finance?q=${encodeURIComponent(q)}`);
+    } else {
+      router.push(`/staff/catalogue?q=${encodeURIComponent(q)}`);
+    }
+  };
+
+  // Clean Chart Data Points
   const chartPoints = [
     { time: "08 AM", issues: 18, returns: 12 },
     { time: "10 AM", issues: 42, returns: 28 },
@@ -34,11 +50,10 @@ export default function StaffOverviewPage() {
     { time: "06 PM", issues: 24, returns: 16 },
   ];
 
-  // SVG dimensions
   const svgWidth = 600;
-  const svgHeight = 180;
-  const paddingX = 40;
-  const paddingY = 25;
+  const svgHeight = 160;
+  const paddingX = 35;
+  const paddingY = 20;
   const maxVal = 70;
 
   const getX = (index: number) =>
@@ -58,112 +73,255 @@ export default function StaffOverviewPage() {
     {
       id: "act-1",
       type: "return",
-      title: "Book returned",
-      subtitle: "The White Tiger - MBR-2023-3904",
+      title: "Book Returned",
+      detail: "The White Tiger · ACC-2024-0012",
+      member: "MBR-2023-3904 (Sunita Rao)",
       time: "09:42 AM",
       icon: RotateCcw,
-      iconColor: "text-teal-700 bg-teal-50 border-teal-200",
+      badgeColor: "bg-teal-50 text-teal-700 border-teal-200",
     },
     {
       id: "act-2",
       type: "issue",
-      title: "Book issued",
-      subtitle: "Wings of Fire - MBR-2024-0188",
+      title: "Book Issued",
+      detail: "Wings of Fire · ACC-2024-0043",
+      member: "MBR-2024-0188 (Priya Vance)",
       time: "09:12 AM",
       icon: BookOpen,
-      iconColor: "text-blue-700 bg-blue-50 border-blue-200",
+      badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
     },
     {
       id: "act-3",
       type: "member",
-      title: "New member registered",
-      subtitle: "Priya Vance - MBR-2026-3142",
+      title: "New Member Registered",
+      detail: "Student Category · Deposit: ₹500",
+      member: "MBR-2026-00012 (Aditya Roy)",
       time: "08:58 AM",
       icon: UserPlus,
-      iconColor: "text-amber-700 bg-amber-50 border-amber-200",
+      badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Header Greeting Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
-        <div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            Library Dashboard
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Real-time circulation trends, stack copy distribution, and daily desk operations.
-          </p>
-        </div>
-
-        {/* Top Action Buttons */}
-        <div className="flex items-center gap-2.5">
-          <div className="relative">
-            <select
-              value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value)}
-              className="appearance-none bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-medium pl-3 pr-8 py-2 rounded-xl shadow-xs focus:outline-teal-600 cursor-pointer"
-            >
-              <option>Today</option>
-              <option>This week</option>
-              <option>This month</option>
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+      {/* 1. OPAC-Style Command Hero Banner */}
+      <section className="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-sm relative overflow-hidden">
+        <div className="max-w-3xl mx-auto text-center space-y-3.5 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs font-medium text-teal-300">
+            <Building2 className="w-3.5 h-3.5 text-teal-400" />
+            <span>District Public Library · Staff Operations & Admin Console</span>
           </div>
 
-          <button
-            onClick={() => setTransactionModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-serif text-white">
+            Library Operations & Circulation Command
+          </h1>
+
+          <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-normal">
+            Manage accession catalog, member directory, real-time physical issue & return circulation, and daily government receipts.
+          </p>
+
+          {/* Quick Omni Search Bar (Matching OPAC Hero) */}
+          <form
+            onSubmit={handleOmniSearch}
+            className="flex flex-col sm:flex-row items-center gap-2 max-w-2xl mx-auto bg-white p-1.5 rounded-xl border border-slate-200 text-slate-900 shadow-sm mt-2"
           >
-            <Plus className="w-4 h-4" />
-            <span>New transaction</span>
-          </button>
+            <div className="flex items-center gap-2.5 flex-1 w-full px-3">
+              <Search className="w-4 h-4 text-slate-400 shrink-0" />
+              <input
+                type="text"
+                value={omniSearch}
+                onChange={(e) => setOmniSearch(e.target.value)}
+                placeholder="Search catalog by ISBN/Title, members by Card No, or receipts..."
+                className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 py-2 outline-none font-medium"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full sm:w-auto px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-medium rounded-lg text-sm transition shrink-0 cursor-pointer"
+            >
+              Action / Search
+            </button>
+          </form>
+
+          {/* Quick Action Pills (Matching OPAC Popular Searches) */}
+          <div className="flex items-center justify-center gap-2 flex-wrap text-xs text-slate-300 pt-1">
+            <span className="text-slate-400 text-[11px]">Quick actions:</span>
+            <button
+              onClick={() => setTransactionModalOpen(true)}
+              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 cursor-pointer text-teal-300 font-medium"
+            >
+              <Plus className="w-3 h-3" />
+              <span>Issue Book</span>
+            </button>
+            <button
+              onClick={() => setTransactionModalOpen(true)}
+              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 cursor-pointer text-slate-300"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Return Book</span>
+            </button>
+            <Link
+              href="/staff/members"
+              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
+            >
+              <UserPlus className="w-3 h-3" />
+              <span>Register Member</span>
+            </Link>
+            <Link
+              href="/staff/catalogue"
+              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
+            >
+              <BookOpen className="w-3 h-3" />
+              <span>Catalogue</span>
+            </Link>
+            <Link
+              href="/staff/finance"
+              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
+            >
+              <IndianRupee className="w-3 h-3" />
+              <span>Collect Dues</span>
+            </Link>
+            <Link
+              href="/staff/reports"
+              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
+            >
+              <FileText className="w-3 h-3" />
+              <span>Audit Reports</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Overview Sub-header with Time Filter */}
+      <div className="flex items-center justify-between gap-3 pt-1">
+        <div>
+          <h2 className="text-base font-bold text-slate-900 tracking-tight">Key Operational Metrics</h2>
+          <p className="text-xs text-slate-500">Live indicators across physical inventory and circulation</p>
+        </div>
+        <div className="relative">
+          <select
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value)}
+            className="appearance-none bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-medium pl-3 pr-7 py-1.5 rounded-lg focus:outline-teal-600 cursor-pointer shadow-xs"
+          >
+            <option>Today</option>
+            <option>This week</option>
+            <option>This month</option>
+          </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
-      {/* Primary Analytical Panels: Library Activity & Copy Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Panel: AT A GLANCE / Library activity (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
+      {/* 2. Top 4 Essential KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1 */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
+            <span>Catalogue Titles</span>
+            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
+              <BookOpen className="w-3.5 h-3.5 text-teal-700" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-bold text-slate-900 tabular-nums">8,426</div>
+            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+              <span className="text-teal-700 font-semibold">+174</span>
+              <span>new this month</span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 2 */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
+            <span>Active Members</span>
+            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
+              <Users className="w-3.5 h-3.5 text-teal-700" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-bold text-slate-900 tabular-nums">3,218</div>
+            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+              <span className="text-teal-700 font-semibold">+38</span>
+              <span>registered recently</span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 3 */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
+            <span>Books on Loan</span>
+            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-bold text-slate-900 tabular-nums">1,084</div>
+            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+              <span className="text-amber-700 font-semibold">32</span>
+              <span>due this week</span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI 4 */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
+            <span>Collections Today</span>
+            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
+              <IndianRupee className="w-3.5 h-3.5 text-emerald-700" />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-bold text-slate-900 tabular-nums">₹ 2,840</div>
+            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+              <span className="text-emerald-700 font-semibold">18 receipts</span>
+              <span>posted</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Middle 2 Panels (Activity & Inventory) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Left: Library Activity Chart (2 cols) */}
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] tracking-widest uppercase font-semibold text-teal-700">
-                  At a glance
-                </p>
-                <h3 className="font-serif text-lg font-bold text-slate-900 mt-0.5">
-                  Library activity
+                <h3 className="text-sm font-bold text-slate-900">
+                  Circulation Activity
                 </h3>
+                <p className="text-xs text-slate-500">Issues vs Returns across library shifts</p>
               </div>
               <div className="relative">
                 <select
                   value={activityFilter}
                   onChange={(e) => setActivityFilter(e.target.value)}
-                  className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium pl-2.5 pr-7 py-1 rounded-lg shadow-2xs focus:outline-teal-600 cursor-pointer"
+                  className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium pl-2.5 pr-6 py-1 rounded-md focus:outline-teal-600 cursor-pointer"
                 >
                   <option>Today</option>
                   <option>This week</option>
                 </select>
-                <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3 h-3 text-slate-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
-            <div className="mt-4 flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-serif text-slate-900">
-                146 <span className="text-xs font-sans font-normal text-slate-500">transactions</span>
-              </span>
-              <span className="text-xs text-teal-700 font-semibold flex items-center gap-0.5">
-                <TrendingUp className="w-3.5 h-3.5" /> 12.8% vs previous period
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-slate-900 tabular-nums">146</span>
+              <span className="text-xs font-normal text-slate-500">transactions</span>
+              <span className="text-xs text-teal-700 font-medium flex items-center gap-0.5 ml-2">
+                <TrendingUp className="w-3.5 h-3.5" /> +12.8%
               </span>
             </div>
           </div>
 
           {/* SVG Line Chart */}
-          <div className="mt-6 w-full overflow-x-auto">
+          <div className="mt-4 w-full overflow-x-auto">
             <svg
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              className="w-full h-44 text-slate-300 overflow-visible"
+              className="w-full h-36 text-slate-300 overflow-visible"
             >
               {[15, 35, 55].map((val) => (
                 <line
@@ -172,8 +330,7 @@ export default function StaffOverviewPage() {
                   y1={getY(val)}
                   x2={svgWidth - paddingX}
                   y2={getY(val)}
-                  stroke="#e2e8f0"
-                  strokeDasharray="3 3"
+                  stroke="#f1f5f9"
                   strokeWidth="1"
                 />
               ))}
@@ -183,7 +340,7 @@ export default function StaffOverviewPage() {
                 y1={getY(0)}
                 x2={svgWidth - paddingX}
                 y2={getY(0)}
-                stroke="#cbd5e1"
+                stroke="#e2e8f0"
                 strokeWidth="1"
               />
 
@@ -194,16 +351,14 @@ export default function StaffOverviewPage() {
                 stroke="#3b82f6"
                 strokeWidth="2"
                 strokeDasharray="4 4"
-                className="transition-all"
               />
 
               {/* Issues line (teal/solid) */}
               <path
                 d={issuesPath}
                 fill="none"
-                stroke="#0d9488"
-                strokeWidth="2.5"
-                className="transition-all"
+                stroke="#0f766e"
+                strokeWidth="2"
               />
 
               {chartPoints.map((p, i) => (
@@ -211,27 +366,21 @@ export default function StaffOverviewPage() {
                   <circle
                     cx={getX(i)}
                     cy={getY(p.issues)}
-                    r={hoveredPoint === i ? "6" : "4"}
-                    fill="#0d9488"
-                    className="cursor-pointer transition-all"
-                    onMouseEnter={() => setHoveredPoint(i)}
-                    onMouseLeave={() => setHoveredPoint(null)}
+                    r="3.5"
+                    fill="#0f766e"
                   />
                   <circle
                     cx={getX(i)}
                     cy={getY(p.returns)}
-                    r={hoveredPoint === i ? "5" : "3.5"}
+                    r="3"
                     fill="#3b82f6"
-                    className="cursor-pointer transition-all"
-                    onMouseEnter={() => setHoveredPoint(i)}
-                    onMouseLeave={() => setHoveredPoint(null)}
                   />
                   <text
                     x={getX(i)}
-                    y={svgHeight - 6}
+                    y={svgHeight - 4}
                     textAnchor="middle"
-                    fill="#64748b"
-                    fontSize="10"
+                    fill="#94a3b8"
+                    fontSize="9"
                     fontFamily="sans-serif"
                   >
                     {p.time}
@@ -241,137 +390,118 @@ export default function StaffOverviewPage() {
             </svg>
           </div>
 
-          {/* Chart Legend & Caption */}
+          {/* Chart Legend */}
           <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100 mt-2">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-teal-600" />
+                <span className="w-2 h-2 rounded-full bg-teal-700" />
                 <span className="text-[11px] font-medium text-slate-700">Issues</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
                 <span className="text-[11px] font-medium text-slate-700">Returns</span>
               </div>
             </div>
-            <span className="text-[10px] text-slate-400">Weekly trend - October 2026</span>
+            <span className="text-[10px] text-slate-400">Shift activity</span>
           </div>
         </div>
 
-        {/* Right Panel: YOUR COLLECTION / Copy status */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
+        {/* Right: Copy Status */}
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] tracking-widest uppercase font-semibold text-teal-700">
-                  Your collection
-                </p>
-                <h3 className="font-serif text-lg font-bold text-slate-900 mt-0.5">
-                  Copy status
+                <h3 className="text-sm font-bold text-slate-900">
+                  Holdings Status
                 </h3>
+                <p className="text-xs text-slate-500">Physical copy availability breakdown</p>
               </div>
               <Link
                 href="/staff/catalogue"
-                className="text-slate-400 hover:text-slate-800 transition"
+                className="text-slate-400 hover:text-slate-700 transition"
                 title="Open catalogue"
               >
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            <div className="mt-4">
-              <span className="text-2xl font-bold font-serif text-slate-900">
-                12,680 <span className="text-xs font-sans font-normal text-slate-500">physical copies</span>
+            <div className="mt-3">
+              <span className="text-2xl font-bold text-slate-900 tabular-nums">
+                12,680
               </span>
+              <span className="text-xs text-slate-500 ml-1.5">total physical copies</span>
             </div>
 
             {/* Segmented Progress Bar */}
-            <div className="w-full h-3 rounded-full bg-slate-100 flex overflow-hidden mt-5 shadow-inner">
-              <div
-                style={{ width: "58%" }}
-                className="bg-teal-600 hover:opacity-90 transition"
-                title="Available: 7,354 copies"
-              />
-              <div
-                style={{ width: "31%" }}
-                className="bg-blue-600 hover:opacity-90 transition"
-                title="Issued: 3,934 copies"
-              />
-              <div
-                style={{ width: "6%" }}
-                className="bg-amber-500 hover:opacity-90 transition"
-                title="Reserved: 750 copies"
-              />
-              <div
-                style={{ width: "5%" }}
-                className="bg-slate-400 hover:opacity-90 transition"
-                title="Other: 642 copies"
-              />
+            <div className="w-full h-2.5 rounded-full bg-slate-100 flex overflow-hidden mt-4">
+              <div style={{ width: "58%" }} className="bg-teal-700" title="Available: 7,354" />
+              <div style={{ width: "31%" }} className="bg-blue-600" title="Issued: 3,934" />
+              <div style={{ width: "6%" }} className="bg-amber-500" title="Reserved: 750" />
+              <div style={{ width: "5%" }} className="bg-slate-400" title="Other: 642" />
             </div>
 
-            {/* Breakdown Legend List */}
-            <div className="mt-6 space-y-3 text-xs">
-              <div className="flex items-center justify-between">
+            {/* Breakdown List */}
+            <div className="mt-5 space-y-2 text-xs">
+              <div className="flex items-center justify-between py-1 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-teal-600" />
-                  <span className="text-slate-700 font-medium">Available</span>
+                  <span className="w-2 h-2 rounded-full bg-teal-700" />
+                  <span className="text-slate-700 font-medium">Available on Shelves</span>
                 </div>
                 <span className="font-semibold text-slate-900 font-mono">7,354</span>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-1 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="text-slate-700 font-medium">Issued</span>
+                  <span className="w-2 h-2 rounded-full bg-blue-600" />
+                  <span className="text-slate-700 font-medium">Currently on Loan</span>
                 </div>
                 <span className="font-semibold text-slate-900 font-mono">3,934</span>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-1 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <span className="text-slate-700 font-medium">Reserved</span>
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                  <span className="text-slate-700 font-medium">Held for Reservations</span>
                 </div>
                 <span className="font-semibold text-slate-900 font-mono">750</span>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-                  <span className="text-slate-700 font-medium">Other</span>
+                  <span className="w-2 h-2 rounded-full bg-slate-400" />
+                  <span className="text-slate-700 font-medium">Binding & In-Processing</span>
                 </div>
                 <span className="font-semibold text-slate-900 font-mono">642</span>
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 mt-6">
+          <div className="pt-3 border-t border-slate-100 mt-4">
             <Link
               href="/staff/catalogue"
-              className="w-full flex items-center justify-between text-xs font-medium text-slate-700 hover:text-teal-700 py-1 transition group"
+              className="w-full flex items-center justify-between text-xs font-medium text-teal-700 hover:text-teal-800 transition"
             >
-              <span>Open catalogue</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition text-slate-400 group-hover:text-teal-700" />
+              <span>Manage stack inventory</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* 4. Bottom Section: DAILY OPERATIONS / Recent activity */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      {/* 4. Bottom Section: Recent Operations */}
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div>
-            <p className="text-[10px] tracking-widest uppercase font-semibold text-teal-700">
-              Daily operations
-            </p>
-            <h3 className="font-serif text-lg font-bold text-slate-900 mt-0.5">
-              Recent activity
+            <h3 className="text-sm font-bold text-slate-900">
+              Recent Transactions
             </h3>
+            <p className="text-xs text-slate-500">Live circulation activity log</p>
           </div>
           <Link
             href="/staff/circulation"
-            className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-teal-700 font-medium transition"
+            className="flex items-center gap-1 text-xs text-teal-700 hover:text-teal-800 font-medium transition"
           >
-            <span>View circulation</span>
+            <span>Circulation Desk</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -383,29 +513,26 @@ export default function StaffOverviewPage() {
             return (
               <div
                 key={act.id}
-                className="py-3.5 flex items-center justify-between gap-4 hover:bg-slate-50/80 rounded-xl px-2 transition"
+                className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 px-1 rounded-lg transition"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border ${act.iconColor}`}
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${act.badgeColor}`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                   </div>
                   <div className="truncate">
                     <p className="text-xs font-semibold text-slate-900 leading-tight">
-                      {act.title}
+                      {act.title} · <span className="font-normal text-slate-600">{act.detail}</span>
                     </p>
-                    <p className="text-[11px] text-slate-500 font-mono truncate mt-0.5">
-                      {act.subtitle}
+                    <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                      {act.member}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <span className="text-[11px] text-slate-400 font-mono">{act.time}</span>
-                  <button className="text-slate-400 hover:text-slate-700 p-1">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
             );

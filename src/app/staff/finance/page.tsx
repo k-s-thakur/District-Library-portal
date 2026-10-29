@@ -174,58 +174,81 @@ export default function StaffFinancePage() {
         </div>
       )}
 
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      {/* 1. Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Finance & Receipts
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Cash desk collection, overdue fines, digital receipts, and reversal audit trail.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Fee collections, government receipts, outstanding dues, and cash audits
           </p>
         </div>
 
         {/* Action Buttons Top Right */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium shadow-xs transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span>Export</span>
+            <span>Export Register</span>
           </button>
 
           <button
             onClick={() => setPaymentModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Record payment</span>
+            <span>Record Payment</span>
           </button>
         </div>
       </div>
 
-      {/* Finance Sub-tabs (Payment Register & Reversal Workflow) */}
+      {/* 2. Top 4 Metric KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-slate-900 tabular-nums">₹ 2,840</div>
+          <div className="text-xs text-slate-500 mt-0.5">Collected Today (18 receipts)</div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-slate-900 tabular-nums">₹ 18,620</div>
+          <div className="text-xs text-slate-500 mt-0.5">Collected This Month</div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-amber-600 tabular-nums">₹ 6,180</div>
+          <div className="text-xs text-slate-500 mt-0.5">Outstanding Overdue Dues</div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+          <div className="text-2xl font-bold text-slate-700 tabular-nums">₹ 120</div>
+          <div className="text-xs text-slate-500 mt-0.5">Waivers Recorded</div>
+        </div>
+      </div>
+
+      {/* Finance Sub-tabs */}
       <div className="flex border-b border-slate-200 gap-1 text-xs font-medium">
         <button
           onClick={() => setActiveTab("register")}
-          className={`py-2 px-3.5 border-b-2 font-semibold transition ${
+          className={`py-2 px-3.5 border-b-2 font-medium transition cursor-pointer ${
             activeTab === "register"
-              ? "border-teal-600 text-teal-800 bg-teal-50/50 rounded-t-lg"
+              ? "border-teal-700 text-teal-800 font-semibold"
               : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
-          Payment Register ({receipts.length})
+          Receipts Register ({receipts.length})
         </button>
         <button
           onClick={() => setActiveTab("reversal")}
-          className={`py-2 px-3.5 border-b-2 font-semibold transition ${
+          className={`py-2 px-3.5 border-b-2 font-medium transition cursor-pointer ${
             activeTab === "reversal"
-              ? "border-teal-600 text-teal-800 bg-teal-50/50 rounded-t-lg"
+              ? "border-teal-700 text-teal-800 font-semibold"
               : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
-          Payment Reversal Desk (Audited)
+          Payment Reversals & Audit Desk
         </button>
       </div>
 

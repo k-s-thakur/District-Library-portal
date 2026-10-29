@@ -16,21 +16,12 @@ import {
   ChevronDown,
   MoreHorizontal,
   X,
-  ArrowRight,
   CheckCircle2,
   AlertTriangle,
-  RotateCcw,
-  CreditCard,
   LogOut,
   ExternalLink,
-  ShieldCheck,
   Building2,
-  Layers,
-  ArrowLeft,
-  Sparkles,
-  Menu,
-  Clock,
-  Search,
+  Plus,
 } from "lucide-react";
 import { StaffProvider, useStaff } from "@/context/StaffContext";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
@@ -55,8 +46,9 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
     markNotificationsAsRead,
   } = useStaff();
 
+  const [branchDropdownOpen, setBranchDropdownOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // New Transaction Modal State
   const [txType, setTxType] = useState<"issue" | "return" | "payment">("issue");
@@ -66,27 +58,26 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
   const [txReason, setTxReason] = useState("Overdue fine");
   const [txStatus, setTxStatus] = useState<string | null>(null);
 
+  const branchRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  const fetchUser = async () => {
-    try {
-      const res = await fetch("/api/auth/me");
-      const data = await res.json();
-      if (data.user) {
-        setCurrentUser(data.user);
-      }
-    } catch {
-      setCurrentUser(null);
-    }
-  };
-
   useEffect(() => {
-    fetchUser();
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(() => {});
   }, [pathname]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (branchRef.current && !branchRef.current.contains(event.target as Node)) {
+        setBranchDropdownOpen(false);
+      }
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setProfileMenuOpen(false);
       }
@@ -98,82 +89,82 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setNotificationsOpen]);
 
-  const handleRoleQuickSwitch = async (role: string) => {
-    try {
-      await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role }),
-      });
-      await fetchUser();
-      window.location.reload();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const getPageTitle = () => {
-    if (pathname.includes("/staff/overview") || pathname === "/staff") return "Overview";
-    if (pathname.includes("/staff/catalogue") || pathname.includes("/staff/inventory")) return "Catalogue & Stacks";
+    if (pathname.includes("/staff/overview") || pathname === "/staff") return "Dashboard Overview";
+    if (pathname.includes("/staff/catalogue") || pathname.includes("/staff/inventory")) return "Catalogue & Inventory";
+    if (pathname.includes("/staff/members")) return "Members Directory";
     if (pathname.includes("/staff/circulation")) return "Circulation Desk";
     if (pathname.includes("/staff/finance")) return "Finance & Receipts";
-    if (pathname.includes("/staff/members")) return "Members Directory";
-    if (pathname.includes("/staff/reports")) return "Reports & Insights";
+    if (pathname.includes("/staff/reports")) return "Reports & Auditing";
     if (pathname.includes("/staff/administration")) return "Administration";
-    return "Staff Operations";
+    return "Staff Portal";
   };
 
-  const navItems = [
+  const navSections = [
     {
-      href: "/staff/overview",
-      label: "Overview",
-      desc: "Daily Stats & Activity",
-      icon: LayoutDashboard,
-      active: pathname === "/staff" || pathname.startsWith("/staff/overview"),
+      title: "Operations",
+      items: [
+        {
+          href: "/staff/overview",
+          label: "Dashboard",
+          icon: LayoutDashboard,
+          active: pathname === "/staff" || pathname.startsWith("/staff/overview"),
+        },
+        {
+          href: "/staff/circulation",
+          label: "Circulation Desk",
+          icon: Repeat,
+          badge: "12",
+          active: pathname.startsWith("/staff/circulation"),
+        },
+        {
+          href: "/staff/finance",
+          label: "Finance & Receipts",
+          icon: IndianRupee,
+          active: pathname.startsWith("/staff/finance"),
+        },
+      ],
     },
     {
-      href: "/staff/catalogue",
-      label: "Catalogue & Stacks",
-      desc: "DDC, Copies & Labels",
-      icon: BookOpen,
-      active: pathname.startsWith("/staff/catalogue") || pathname.startsWith("/staff/inventory"),
+      title: "Management",
+      items: [
+        {
+          href: "/staff/catalogue",
+          label: "Catalogue & Stacks",
+          icon: BookOpen,
+          active: pathname.startsWith("/staff/catalogue") || pathname.startsWith("/staff/inventory"),
+        },
+        {
+          href: "/staff/members",
+          label: "Members Directory",
+          icon: Users,
+          active: pathname.startsWith("/staff/members"),
+        },
+      ],
     },
     {
-      href: "/staff/circulation",
-      label: "Circulation Desk",
-      desc: "Fast Issue, Return & Due",
-      icon: Repeat,
-      badge: "12",
-      active: pathname.startsWith("/staff/circulation"),
+      title: "System",
+      items: [
+        {
+          href: "/staff/reports",
+          label: "Reports & Audit",
+          icon: FileText,
+          active: pathname.startsWith("/staff/reports"),
+        },
+        {
+          href: "/staff/administration",
+          label: "Administration",
+          icon: Sliders,
+          active: pathname.startsWith("/staff/administration"),
+        },
+      ],
     },
-    {
-      href: "/staff/finance",
-      label: "Finance & Receipts",
-      desc: "Cash Desk & Reversals",
-      icon: IndianRupee,
-      active: pathname.startsWith("/staff/finance"),
-    },
-    {
-      href: "/staff/members",
-      label: "Members Directory",
-      desc: "Registration & Digital Cards",
-      icon: Users,
-      active: pathname.startsWith("/staff/members"),
-    },
-    {
-      href: "/staff/reports",
-      label: "Reports & Insights",
-      desc: "Auditing & Monthly Stats",
-      icon: FileText,
-      active: pathname.startsWith("/staff/reports"),
-    },
-    {
-      href: "/staff/administration",
-      label: "Administration",
-      desc: "Fine Tariffs & Policies",
-      icon: Sliders,
-      active: pathname.startsWith("/staff/administration"),
-    },
+  ];
+
+  const branches = [
+    { name: "Central Library", sub: "Main Branch · New Delhi" },
+    { name: "North Campus Library", sub: "Zonal Branch · North" },
+    { name: "South Cultural Wing", sub: "Zonal Branch · South" },
   ];
 
   const handleExecuteTx = async (e: React.FormEvent) => {
@@ -186,50 +177,288 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
         setTransactionModalOpen(false);
         setTxMemberNo("");
         setTxAccessionNo("");
-      }, 1200);
-    }, 600);
+      }, 1000);
+    }, 500);
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased font-sans">
-      {/* Main Masthead & Unified Navigation */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs">
-        {/* Top Masthead Row */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
-          {/* Brand Identity */}
-          <div className="flex items-center gap-4 shrink-0">
-            <Link href="/staff/overview" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-xs group-hover:bg-teal-800 transition">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 group-hover:text-teal-700 transition">
-                    GPLMS
-                  </span>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-teal-50 text-teal-800 border border-teal-200/60 rounded-full">
-                    Staff Portal
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-500 hidden sm:block">
-                  Janata Library · Desk & Operations
-                </p>
-              </div>
-            </Link>
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 text-slate-800 antialiased font-sans">
+      {/* 1. LEFT SIDEBAR */}
+      <aside
+        className={`w-full md:w-60 bg-slate-900 text-slate-300 shrink-0 flex flex-col justify-between border-r border-slate-800 z-40 transition-all ${
+          mobileSidebarOpen ? "block" : "hidden md:flex"
+        }`}
+      >
+        <div className="p-4 space-y-4">
+          {/* Brand Header */}
+          <div className="flex items-center gap-2.5 px-1 py-1">
+            <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0">
+              <Building2 className="w-4 h-4 text-white" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-sm font-bold text-white tracking-tight truncate">
+                District Library
+              </h1>
+              <p className="text-[10px] uppercase tracking-wider text-teal-400 font-semibold truncate">
+                Admin & Staff Portal
+              </p>
+            </div>
           </div>
 
-          {/* Right Action Controls: Public Portal Link, ThemeSwitcher, Notifications, Profile */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Branch Selector Dropdown */}
+          <div className="relative" ref={branchRef}>
+            <button
+              onClick={() => setBranchDropdownOpen(!branchDropdownOpen)}
+              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/80 hover:bg-slate-800 transition text-left"
+            >
+              <div className="truncate">
+                <div className="text-xs font-medium text-slate-200 truncate">
+                  {branch.split("(")[0].trim()}
+                </div>
+                <div className="text-[10px] text-slate-400 truncate">Main Branch</div>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+            </button>
+
+            {branchDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 z-50 text-xs">
+                {branches.map((b) => (
+                  <button
+                    key={b.name}
+                    onClick={() => {
+                      setBranch(`${b.name} (${b.sub})`);
+                      setBranchDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 hover:bg-slate-700 transition flex flex-col ${
+                      branch.includes(b.name) ? "bg-teal-950/70 text-teal-300 font-medium" : "text-slate-300"
+                    }`}
+                  >
+                    <span className="font-medium text-white">{b.name}</span>
+                    <span className="text-[10px] text-slate-400">{b.sub}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Grouped Navigation Menus */}
+          <nav className="space-y-4 pt-1">
+            {navSections.map((section) => (
+              <div key={section.title} className="space-y-1">
+                <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-2 py-0.5">
+                  {section.title}
+                </div>
+                <div className="space-y-0.5">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileSidebarOpen(false)}
+                        className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
+                          item.active
+                            ? "bg-teal-600 text-white font-semibold shadow-xs"
+                            : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Icon
+                            className={`w-4 h-4 shrink-0 ${
+                              item.active ? "text-white" : "text-slate-400"
+                            }`}
+                          />
+                          <span className="truncate">{item.label}</span>
+                        </div>
+                        {item.badge && (
+                          <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${
+                            item.active
+                              ? "bg-teal-800 text-teal-100"
+                              : "bg-slate-800 text-teal-400 border border-slate-700"
+                          }`}>
+                            {item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        {/* Sidebar Footer */}
+        <div className="p-3 border-t border-slate-800 space-y-2">
+          {/* Help Link */}
+          <button
+            onClick={() => setStaffGuideOpen(true)}
+            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+          >
+            <div className="flex items-center gap-2">
+              <HelpCircle className="w-3.5 h-3.5 text-teal-400" />
+              <span>Staff Guide & SOPs</span>
+            </div>
+          </button>
+
+          {/* User Profile Card */}
+          <div className="relative" ref={profileRef}>
+            <div className="flex items-center justify-between p-2 rounded-lg bg-slate-800 border border-slate-700/80">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-7 h-7 rounded-md bg-teal-800 text-teal-200 font-semibold text-xs flex items-center justify-center shrink-0">
+                  {currentUser?.name ? currentUser.name.charAt(0) : "A"}
+                </div>
+                <div className="truncate">
+                  <p className="text-xs font-medium text-white truncate">
+                    {currentUser?.name || "Admin Staff"}
+                  </p>
+                  <p className="text-[10px] text-teal-400 truncate">
+                    {currentUser?.role || "LIBRARIAN"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                className="p-1 text-slate-400 hover:text-white rounded"
+                title="Account options"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            {profileMenuOpen && (
+              <div className="absolute bottom-full left-0 right-0 mb-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 z-50 text-xs">
+                <div className="px-3 py-1 border-b border-slate-700 text-[10px] text-slate-400 truncate">
+                  {currentUser?.email || "admin@library.gov.in"}
+                </div>
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 px-3 py-1.5 text-slate-300 hover:bg-slate-700 hover:text-white transition"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Public OPAC Portal</span>
+                </Link>
+                <button
+                  onClick={async () => {
+                    await fetch("/api/auth/logout", { method: "POST" });
+                    router.push("/login");
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-rose-400 hover:bg-rose-950/40 transition text-left cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign out</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      {/* 2. MAIN WORKSPACE CONTAINER */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto min-h-screen">
+        {/* Official Government Utility Strip (Matching OPAC) */}
+        <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 sm:px-6 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-teal-400"></span>
+            <span className="font-medium text-slate-200">
+              District Public Library · Staff Administration Console
+            </span>
+            <span className="hidden md:inline text-slate-600">|</span>
+            <span className="hidden md:inline text-slate-400 font-mono text-[11px]">
+              National Digital Library Node
+            </span>
+          </div>
+
+          {/* Quick Demo Role Switcher */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-slate-400 text-[11px] mr-1 hidden sm:inline">Demo:</span>
+            {[
+              { role: "MEMBER", label: "Citizen", path: "/" },
+              { role: "LIBRARIAN", label: "Librarian", path: "/staff/overview" },
+              { role: "ACCOUNTS_OPERATOR", label: "Accounts", path: "/staff/finance" },
+              { role: "SUPER_ADMIN", label: "Admin", path: "/staff/administration" },
+            ].map((item) => {
+              const active = currentUser?.role === item.role;
+              return (
+                <button
+                  key={item.role}
+                  onClick={async () => {
+                    await fetch("/api/auth/login", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ role: item.role }),
+                    });
+                    if (item.path === "/") {
+                      router.push("/");
+                    } else {
+                      window.location.reload();
+                    }
+                  }}
+                  className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
+                    active
+                      ? "bg-teal-500 text-slate-950 font-semibold"
+                      : "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
             <Link
               href="/"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 transition"
-              title="Open Public Online Public Access Catalogue"
+              className="ml-2 pl-2 border-l border-slate-700 text-[11px] text-teal-300 hover:text-white flex items-center gap-1"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-teal-700" />
               <span>Public OPAC</span>
+              <span>↗</span>
             </Link>
+          </div>
+        </div>
 
-            {/* Dynamic Theme Switcher */}
+        {/* Top Header Bar */}
+        <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4">
+          {/* Breadcrumb Left */}
+          <div className="flex items-center gap-2 text-xs">
+            <button
+              onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+              className="md:hidden p-1.5 rounded-lg hover:bg-slate-100 text-slate-600"
+            >
+              <LayoutDashboard className="w-4 h-4" />
+            </button>
+            <span className="text-slate-400 font-normal">Portal</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-900 font-semibold">{getPageTitle()}</span>
+          </div>
+
+          {/* Right Header Controls */}
+          <div className="flex items-center gap-3">
+            {/* Quick New Transaction Button */}
+            <button
+              onClick={() => setTransactionModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium transition cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Quick Action</span>
+            </button>
+
+            {/* Preview Data Toggle Badge */}
+            <button
+              onClick={() => setPreviewData(!previewData)}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium border transition cursor-pointer ${
+                previewData
+                  ? "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
+                  : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+              }`}
+              title="Toggle sample preview data vs live database"
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  previewData ? "bg-amber-500" : "bg-slate-400"
+                }`}
+              />
+              <span>Demo Mode</span>
+            </button>
+
+            {/* Theme Switcher */}
             <ThemeSwitcher />
 
             {/* Notification Bell */}
@@ -239,210 +468,68 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
                   setNotificationsOpen(!notificationsOpen);
                   markNotificationsAsRead();
                 }}
-                className="relative p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition border border-transparent hover:border-slate-200 cursor-pointer"
+                className="relative p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition"
                 title="Notifications"
               >
                 <Bell className="w-4 h-4" />
                 {notifications.some((n) => !n.read) && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-teal-600 rounded-full ring-2 ring-white"></span>
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-teal-600 rounded-full ring-2 ring-white"></span>
                 )}
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl p-3 z-50 text-xs">
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-lg shadow-lg p-3 z-50 text-xs">
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                    <span className="font-semibold text-slate-900">Notifications & Alerts</span>
-                    <span className="text-[10px] text-teal-700 font-mono font-medium">Automated queue</span>
+                    <span className="font-semibold text-slate-800">Notifications</span>
+                    <span className="text-[10px] text-slate-400 font-mono">System feed</span>
                   </div>
-                  <div className="space-y-2 py-2 max-h-72 overflow-y-auto">
+                  <div className="space-y-1.5 py-2 max-h-72 overflow-y-auto">
                     {notifications.map((n) => (
                       <div
                         key={n.id}
-                        className={`p-2.5 rounded-xl border flex gap-2.5 ${
-                          n.type === "warning"
-                            ? "bg-amber-50/70 border-amber-200 text-amber-900"
-                            : n.type === "success"
-                            ? "bg-teal-50/70 border-teal-200 text-teal-900"
-                            : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className="p-2 rounded-md border border-slate-100 bg-slate-50 text-slate-800"
                       >
-                        <div className="mt-0.5 shrink-0">
-                          {n.type === "warning" ? (
-                            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                          ) : n.type === "success" ? (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
-                          ) : (
-                            <BookOpen className="w-3.5 h-3.5 text-slate-600" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-[11px] leading-snug">{n.title}</p>
-                          <span className="text-[10px] text-slate-400 mt-1 block">{n.time}</span>
-                        </div>
+                        <p className="text-[11px] leading-snug">{n.title}</p>
+                        <span className="text-[10px] text-slate-400 mt-0.5 block">{n.time}</span>
                       </div>
                     ))}
                   </div>
                   <button
                     onClick={() => setNotificationsOpen(false)}
-                    className="w-full text-center py-1.5 text-slate-500 hover:text-slate-800 text-[11px] border-t border-slate-100 mt-1 cursor-pointer"
+                    className="w-full text-center py-1 text-slate-500 hover:text-slate-800 text-[11px] border-t border-slate-100 mt-1 cursor-pointer"
                   >
-                    Close panel
+                    Close
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Admin Profile Dropdown */}
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl border border-slate-200 hover:bg-slate-50 transition cursor-pointer"
-              >
-                <div className="w-8 h-8 rounded-lg bg-teal-800 text-white font-semibold text-xs flex items-center justify-center shrink-0">
-                  {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : "AS"}
-                </div>
-                <div className="hidden sm:block text-left">
-                  <p className="text-xs font-semibold text-slate-900 leading-tight">
-                    {currentUser?.name || "Admin Staff"}
-                  </p>
-                  <p className="text-[10px] text-teal-700 leading-tight">
-                    {currentUser?.role === "SUPER_ADMIN" ? "Super Admin" : "Librarian"}
-                  </p>
-                </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
-              </button>
-
-              {profileMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-1.5 z-50 text-xs">
-                  <div className="px-3.5 py-2 border-b border-slate-100">
-                    <p className="font-semibold text-slate-900">{currentUser?.name || "Admin Staff"}</p>
-                    <p className="text-[11px] text-slate-500 truncate">{currentUser?.email || "admin@library.gov.in"}</p>
-                  </div>
-
-                  <Link
-                    href="/"
-                    onClick={() => setProfileMenuOpen(false)}
-                    className="flex items-center gap-2.5 px-3.5 py-2 text-slate-700 hover:bg-teal-50 hover:text-teal-900 transition"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5 text-teal-700" />
-                    <span>View Public OPAC</span>
-                  </Link>
-
-                  <div className="my-1 border-t border-slate-100" />
-
-                  <button
-                    onClick={async () => {
-                      await fetch("/api/auth/logout", { method: "POST" });
-                      router.push("/login");
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3.5 py-2 text-rose-600 hover:bg-rose-50 transition text-left cursor-pointer"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    <span>Sign out</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Hamburger Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
-              aria-label="Toggle navigation menu"
+            <Link
+              href="/"
+              className="text-xs text-slate-500 hover:text-teal-700 font-medium hidden sm:inline transition"
+              title="Return to Public OPAC"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+              Public OPAC ↗
+            </Link>
           </div>
-        </div>
+        </header>
 
-        {/* Horizontal Navigation Tabs */}
-        <div className="border-t border-slate-100 bg-white/95">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none py-1.5">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
-                      item.active
-                        ? "bg-teal-700 text-white shadow-xs font-bold"
-                        : "text-slate-600 hover:text-teal-900 hover:bg-slate-100"
-                    }`}
-                  >
-                    <Icon className={`w-3.5 h-3.5 ${item.active ? "text-white" : "text-teal-700"}`} />
-                    <span>{item.label}</span>
-                    {item.badge && (
-                      <span
-                        className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${
-                          item.active
-                            ? "bg-teal-900 text-teal-100"
-                            : "bg-teal-100 text-teal-900 font-bold"
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
+        {/* Page View Body */}
+        <main className="flex-1 p-5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">{children}</main>
+      </div>
 
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">
-              Workspace Sections
-            </div>
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium ${
-                    item.active
-                      ? "bg-teal-700 text-white font-bold"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </div>
-                  {item.badge && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-800">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </header>
-
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        {children}
-      </main>
-
-      {/* Quick Transaction Modal */}
+      {/* 3. QUICK TRANSACTION MODAL */}
       {transactionModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-5 space-y-4">
+            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
                   <Repeat className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-base font-bold text-slate-900">New Fast Transaction</h3>
-                  <p className="text-xs text-slate-500">Quick issue, return or cash fee desk</p>
+                  <h3 className="text-sm font-semibold text-slate-900">Fast Circulation Desk</h3>
+                  <p className="text-[11px] text-slate-500">Quick issue, return or fee collection</p>
                 </div>
               </div>
               <button
@@ -454,10 +541,10 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Transaction Type Tabs */}
-            <div className="flex rounded-xl bg-slate-100 p-1 text-xs font-medium">
+            <div className="flex rounded-lg bg-slate-100 p-0.5 text-xs font-medium">
               <button
                 onClick={() => setTxType("issue")}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
+                className={`flex-1 py-1 rounded-md transition ${
                   txType === "issue" ? "bg-white text-teal-800 shadow-xs font-semibold" : "text-slate-500"
                 }`}
               >
@@ -465,7 +552,7 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
               </button>
               <button
                 onClick={() => setTxType("return")}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
+                className={`flex-1 py-1 rounded-md transition ${
                   txType === "return" ? "bg-white text-teal-800 shadow-xs font-semibold" : "text-slate-500"
                 }`}
               >
@@ -473,11 +560,11 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
               </button>
               <button
                 onClick={() => setTxType("payment")}
-                className={`flex-1 py-1.5 rounded-lg transition cursor-pointer ${
+                className={`flex-1 py-1 rounded-md transition ${
                   txType === "payment" ? "bg-white text-teal-800 shadow-xs font-semibold" : "text-slate-500"
                 }`}
               >
-                Record Payment
+                Record Fee
               </button>
             </div>
 
@@ -485,15 +572,15 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
               {txType !== "return" && (
                 <div>
                   <label className="block text-slate-700 font-medium mb-1">
-                    Member Number or Mobile
+                    Member Number (GPL-XXXXX)
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. MBR-2024-0185 or 9811002233"
+                    placeholder="e.g. GPL-2026-00001"
                     value={txMemberNo}
                     onChange={(e) => setTxMemberNo(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-teal-600 bg-white"
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-teal-600"
                   />
                 </div>
               )}
@@ -501,21 +588,21 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
               {txType !== "payment" && (
                 <div>
                   <label className="block text-slate-700 font-medium mb-1">
-                    Accession No. or Scan Barcode
+                    Accession No. or Barcode
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. ACC-2024-0043"
+                    placeholder="e.g. ACC-2026-0001"
                     value={txAccessionNo}
                     onChange={(e) => setTxAccessionNo(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-teal-600 bg-white"
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-teal-600"
                   />
                 </div>
               )}
 
               {txType === "payment" && (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2.5">
                   <div>
                     <label className="block text-slate-700 font-medium mb-1">Amount (₹)</label>
                     <input
@@ -523,7 +610,7 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
                       required
                       value={txAmount}
                       onChange={(e) => setTxAmount(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-teal-600 bg-white"
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-teal-600"
                     />
                   </div>
                   <div>
@@ -531,7 +618,7 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
                     <select
                       value={txReason}
                       onChange={(e) => setTxReason(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-teal-600 bg-white"
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:outline-teal-600 bg-white"
                     >
                       <option>Overdue fine</option>
                       <option>Membership renewal</option>
@@ -542,7 +629,7 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
               )}
 
               {txStatus && (
-                <div className="p-2.5 rounded-lg bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium">
+                <div className="p-2 rounded-md bg-teal-50 border border-teal-200 text-teal-800 text-xs font-medium">
                   {txStatus}
                 </div>
               )}
@@ -551,18 +638,69 @@ function StaffLayoutInner({ children }: { children: React.ReactNode }) {
                 <button
                   type="button"
                   onClick={() => setTransactionModalOpen(false)}
-                  className="px-3.5 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-medium shadow-xs cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white font-medium shadow-xs cursor-pointer"
                 >
-                  Submit Transaction
+                  Confirm
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 4. STAFF GUIDE MODAL */}
+      {staffGuideOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-xl w-full p-5 space-y-3.5 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-2.5 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
+                  <HelpCircle className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900">
+                    Staff Operations Guide & SOPs
+                  </h3>
+                  <p className="text-[11px] text-slate-500">Circulation rules and reference codes</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setStaffGuideOpen(false)}
+                className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
+                <h4 className="font-semibold text-slate-900 text-xs">1. Loan & Circulation Limits</h4>
+                <p>• General Citizen quota: 3 titles for 14 days.</p>
+                <p>• Students: 5 titles for 21 days; Researchers: 7 titles for 30 days.</p>
+                <p>• Overdue fine: ₹2 per calendar day after grace period.</p>
+              </div>
+
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
+                <h4 className="font-semibold text-slate-900 text-xs">2. Cash Receipts & Auditing</h4>
+                <p>• Every fine or fee payment generates a unique receipt (RCP-YYYYMM-XXXX).</p>
+                <p>• Reversals require approving officer authorization.</p>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setStaffGuideOpen(false)}
+                className="px-3.5 py-1.5 rounded-lg bg-teal-700 text-white font-medium hover:bg-teal-800 text-xs cursor-pointer"
+              >
+                Close Guide
+              </button>
+            </div>
           </div>
         </div>
       )}
