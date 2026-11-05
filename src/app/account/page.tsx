@@ -12,7 +12,8 @@ import {
   AlertTriangle,
   ArrowRight,
   RefreshCw,
-  CreditCard
+  CreditCard,
+  UserCheck
 } from "lucide-react";
 import { Member } from "@/types";
 
@@ -27,14 +28,26 @@ export default function AccountPage() {
       const authRes = await fetch("/api/auth/me");
       const authData = await authRes.json();
 
-      if (!authData.user || authData.user.role !== "MEMBER" || !authData.user.memberId) {
-        router.push("/login");
-        return;
+      let targetMemberId = authData?.user?.memberId;
+
+      // In open-access mode without passwords, auto-login if session is missing
+      if (!targetMemberId || authData?.user?.role !== "MEMBER") {
+        const autoRes = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "MEMBER" }),
+        });
+        const autoData = await autoRes.json();
+        targetMemberId = autoData?.user?.memberId;
       }
 
-      const memberRes = await fetch(`/api/members/${authData.user.memberId}`);
-      const memberData = await memberRes.json();
-      setMember(memberData.member);
+      if (targetMemberId) {
+        const memberRes = await fetch(`/api/members/${targetMemberId}`);
+        const memberData = await memberRes.json();
+        if (memberData?.member) {
+          setMember(memberData.member);
+        }
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -50,12 +63,30 @@ export default function AccountPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-3">
         <RefreshCw className="w-6 h-6 animate-spin text-teal-700 mx-auto" />
-        <p className="text-xs text-slate-500 font-medium">Loading member portal...</p>
+        <p className="text-xs text-slate-500 font-medium">Opening Citizen OPAC Member Portal...</p>
       </div>
     );
   }
 
-  if (!member) return null;
+  if (!member) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-20 text-center space-y-4">
+        <div className="w-12 h-12 bg-teal-50 text-teal-700 rounded-full flex items-center justify-center mx-auto">
+          <UserCheck className="w-6 h-6" />
+        </div>
+        <h2 className="text-lg font-bold text-slate-800">Ready to Explore Member OPAC</h2>
+        <p className="text-xs text-slate-600">
+          Click below to load sample citizen records without any password.
+        </p>
+        <button
+          onClick={() => fetchMemberData()}
+          className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-semibold"
+        >
+          Load Member Records
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -64,7 +95,7 @@ export default function AccountPage() {
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-teal-200 text-xs font-medium">
             <CreditCard className="w-4 h-4" />
-            <span>Digital Library Card</span>
+            <span>Digital Library Card · Open Access</span>
           </div>
 
           <h1 className="font-serif text-2xl font-bold">{member.fullName}</h1>
@@ -101,7 +132,7 @@ export default function AccountPage() {
           </div>
           <div>
             <span className="text-xs text-slate-400 block font-medium">Active Holds</span>
-            <span className="font-serif text-xl font-bold text-slate-900">{member.reservations.length} Titles</span>
+            <span className="font-serif text-xl font-bold text-slate-900">{member.reservations?.length || 0} Titles</span>
           </div>
         </div>
 
@@ -111,7 +142,7 @@ export default function AccountPage() {
           </div>
           <div>
             <span className="text-xs text-slate-400 block font-medium">Outstanding Dues</span>
-            <span className="font-serif text-xl font-bold text-slate-900">₹{member.totalOutstandingDues.toFixed(2)}</span>
+            <span className="font-serif text-xl font-bold text-slate-900">₹{member.totalOutstandingDues?.toFixed(2) || "0.00"}</span>
           </div>
         </div>
       </div>
@@ -121,7 +152,7 @@ export default function AccountPage() {
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h2 className="font-serif text-base font-bold text-slate-900 flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-teal-700" />
-            <span>Currently Borrowed Books ({member.loans.length})</span>
+            <span>Currently Borrowed Books ({member.loans?.length || 0})</span>
           </h2>
           <Link
             href="/search"
@@ -132,7 +163,7 @@ export default function AccountPage() {
           </Link>
         </div>
 
-        {member.loans.length === 0 ? (
+        {!member.loans || member.loans.length === 0 ? (
           <p className="text-xs text-slate-500 py-4 text-center">
             You have no books currently checked out.
           </p>
@@ -183,7 +214,7 @@ export default function AccountPage() {
       </section>
 
       {/* Holds */}
-      {member.reservations.length > 0 && (
+      {member.reservations && member.reservations.length > 0 && (
         <section className="bg-white rounded-xl border border-slate-200 p-6 space-y-3">
           <h2 className="font-serif text-base font-bold text-slate-900">Active Holds</h2>
           <div className="divide-y divide-slate-100">

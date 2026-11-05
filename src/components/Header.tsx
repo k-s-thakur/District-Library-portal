@@ -139,10 +139,20 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Right Section: Member Profile or Sign In */}
-        <div className="hidden sm:flex items-center gap-3">
+        {/* Right Section: Direct Access to Admin & Citizen OPAC (Passwordless) */}
+        <div className="hidden sm:flex items-center gap-2.5">
+          {/* Direct Admin Portal Access Button */}
+          <Link
+            href="/staff/overview"
+            className="px-3 py-1.5 rounded-xl border border-teal-700/30 bg-teal-50 hover:bg-teal-100 text-teal-900 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs"
+            title="Open Admin & Staff Console directly without password"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-700" />
+            <span>Admin Portal</span>
+          </Link>
+
           {currentUser ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <Link
                 href={currentUser.role === "MEMBER" ? "/account" : "/staff/overview"}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-teal-300 bg-slate-50 hover:bg-teal-50/50 transition text-xs"
@@ -169,11 +179,12 @@ export default function Header() {
             </div>
           ) : (
             <Link
-              href="/login"
-              className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-semibold shadow-xs transition flex items-center gap-1.5"
+              href="/account"
+              className="px-3.5 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-semibold shadow-xs transition flex items-center gap-1.5"
+              title="Citizen Member OPAC"
             >
               <User className="w-3.5 h-3.5" />
-              <span>Member Sign In</span>
+              <span>Member OPAC</span>
             </Link>
           )}
         </div>
@@ -226,31 +237,25 @@ export default function Header() {
             >
               Library Info &amp; Rules
             </Link>
-            {currentUser ? (
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                <Link
-                  href={currentUser.role === "MEMBER" ? "/account" : "/staff/overview"}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 text-teal-700 font-semibold"
-                >
-                  My Account ({currentUser.name})
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="p-2 text-xs text-rose-600 font-medium"
-                >
-                  Sign Out
-                </button>
-              </div>
-            ) : (
+
+            <div className="pt-2 border-t border-slate-100 space-y-2">
               <Link
-                href="/login"
+                href="/staff/overview"
                 onClick={() => setMobileMenuOpen(false)}
-                className="mt-2 py-2.5 px-4 bg-teal-700 text-white font-medium rounded-xl text-center text-xs"
+                className="w-full py-2 px-3 bg-teal-50 border border-teal-200 text-teal-900 font-semibold rounded-xl text-center text-xs flex items-center justify-center gap-1.5"
               >
-                Member Sign In
+                <ShieldCheck className="w-4 h-4 text-teal-700" />
+                <span>Open Admin Portal</span>
               </Link>
-            )}
+              <Link
+                href="/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2 px-3 bg-teal-700 text-white font-semibold rounded-xl text-center text-xs flex items-center justify-center gap-1.5"
+              >
+                <User className="w-4 h-4" />
+                <span>Open Member OPAC</span>
+              </Link>
+            </div>
           </div>
         </div>
       )}
