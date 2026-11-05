@@ -1,183 +1,182 @@
+import React from "react";
 import Link from "next/link";
 import {
   Search,
+  BookOpen,
+  Clock,
+  MapPin,
   ArrowRight,
-  CheckCircle,
-  Building2,
+  Sparkles,
+  CheckCircle2
 } from "lucide-react";
-import CuratedBookRow from "@/components/CuratedBookRow";
-import CategoryTile from "@/components/CategoryTile";
-import { getCuratedCatalog, getCategoriesWithCounts } from "@/lib/services/catalogue.service";
+import BookCarousel from "@/components/BookCarousel";
+import { BOOKS, CATEGORIES } from "@/data/mockData";
 
-export const dynamic = "force-dynamic";
-
-export default async function HomePage() {
-  const [curated, categories] = await Promise.all([
-    getCuratedCatalog(),
-    getCategoriesWithCounts(),
-  ]);
+export default function HomePage() {
+  const featuredBooks = BOOKS.filter((b) => b.isEditorChoice || b.isFeatured);
+  const popularBooks = BOOKS.filter((b) => b.isPopular);
 
   return (
-    <div className="space-y-10 pb-16">
-      {/* 1. Hero Search & Masthead */}
-      <section className="bg-slate-900 text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
-        <div className="max-w-3xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs text-teal-300">
-            <Building2 className="w-3.5 h-3.5 text-teal-400" />
-            <span>District Public Library · Online Public Access Catalogue</span>
+    <div className="space-y-12 pb-16">
+      {/* Clean Hero Section */}
+      <section className="bg-gradient-to-b from-slate-50 via-teal-50/30 to-white border-b border-slate-100 py-14 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center space-y-5">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/80 text-xs font-semibold text-teal-800">
+            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+            <span>District Public Library · Online Catalogue</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-            Discover Books in Physical Stacks
+          <h1 className="font-serif text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            Discover Books, Check Availability &amp; Find Shelf Locations
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto font-normal">
-            Search published holdings across Dewey Decimal Classification, verify real-time copy availability, and locate shelf racks before your visit.
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Search our physical catalogue across science, literature, history, law, and computing with real-time stack coordinates.
           </p>
 
-          {/* Search Box */}
+          {/* Clean Search Input */}
           <form
             action="/search"
             method="GET"
-            className="flex flex-col sm:flex-row items-center gap-2 max-w-2xl mx-auto bg-white p-1.5 rounded-xl border border-slate-200 text-slate-900 shadow-sm"
+            className="max-w-2xl mx-auto bg-white p-1.5 rounded-2xl border border-slate-300 shadow-md focus-within:ring-2 focus-within:ring-teal-600/30 focus-within:border-teal-600 transition flex items-center gap-2"
           >
-            <div className="flex items-center gap-2.5 flex-1 w-full px-3">
-              <Search className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="relative flex-1">
+              <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 name="q"
-                placeholder="Search by title, author name, ISBN, or subject..."
-                className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 py-2 outline-none font-medium"
+                placeholder="Search by title, author, topic, ISBN or Dewey code..."
+                className="w-full pl-11 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none bg-transparent"
               />
             </div>
             <button
               type="submit"
-              className="w-full sm:w-auto px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-medium rounded-lg text-sm transition shrink-0 cursor-pointer"
+              className="px-5 py-3 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer"
             >
-              Search Catalogue
+              <span>Search</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
 
-          {/* Quick Keyword Pills */}
-          <div className="flex items-center justify-center gap-2 flex-wrap text-xs text-slate-300 pt-1">
-            <span className="text-slate-400 text-[11px]">Popular searches:</span>
+          {/* Category Chips */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs">
+            <span className="text-slate-400 font-medium">Popular:</span>
             {[
-              { label: "Wings of Fire", q: "Wings of Fire" },
-              { label: "Munshi Premchand", q: "Premchand" },
-              { label: "Constitution of India", q: "Constitution" },
-              { label: "Operating Systems", q: "Operating Systems" },
-              { label: "Rabindranath Tagore", q: "Tagore" },
-            ].map((tag) => (
+              { label: "Literature", code: "LITERATURE" },
+              { label: "Science", code: "SCIENCE" },
+              { label: "Technology", code: "CS_TECH" },
+              { label: "History", code: "HISTORY" },
+              { label: "Constitution & Law", code: "LAW_GOV" },
+              { label: "Philosophy", code: "PHILOSOPHY" },
+            ].map((cat) => (
               <Link
-                key={tag.q}
-                href={`/search?q=${encodeURIComponent(tag.q)}`}
-                className="px-2.5 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition"
+                key={cat.code}
+                href={`/search?category=${cat.code}`}
+                className="px-3 py-1 rounded-full bg-white text-slate-600 hover:text-teal-700 border border-slate-200 hover:border-teal-300 transition shadow-2xs"
               >
-                {tag.label}
+                {cat.label}
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 2. Main Content Container */}
+      {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        {/* Curated Row 1: Editor's Choice */}
-        <CuratedBookRow
-          title="Essential Classics & Reference Holdings"
-          subtitle="Foundational titles curated by the Library Board"
-          viewAllLink="/search?category=LITERATURE"
-          books={curated.editorsChoice}
+        {/* Curated Featured Books */}
+        <BookCarousel
+          title="Featured Titles"
+          subtitle="Selected essential classics and recommended reference books"
+          viewAllLink="/search"
+          books={featuredBooks}
         />
 
-        {/* 3. Browse Categories / Genres Grid */}
+        {/* Popular in Circulation */}
+        <BookCarousel
+          title="Popular in Circulation"
+          subtitle="Frequently borrowed books and biographies"
+          viewAllLink="/search?sort=relevance"
+          books={popularBooks}
+        />
+
+        {/* Browse by Categories */}
         <section className="space-y-4">
-          <div className="flex items-end justify-between border-b border-slate-200 pb-2.5">
+          <div className="flex items-end justify-between border-b border-slate-100 pb-3">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-900">
-                Browse by Category & Classification
+              <h2 className="font-serif text-xl font-bold tracking-tight text-slate-900">
+                Browse by Category
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Explore holdings catalogued under the Dewey Decimal Classification (DDC)
+                Explore holdings organised by Dewey Decimal Classification
               </p>
             </div>
             <Link
               href="/categories"
-              className="text-xs font-semibold text-teal-700 hover:text-teal-800 flex items-center gap-1 transition"
+              className="text-xs font-semibold text-teal-700 hover:text-teal-900 flex items-center gap-1 transition"
             >
-              <span>View all categories</span>
+              <span>All Categories</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
-            {categories.map((cat) => (
-              <CategoryTile key={cat.id} {...cat} />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.id}
+                href={`/search?category=${cat.code}`}
+                className="p-4 rounded-xl border border-slate-200 bg-white hover:border-teal-300 hover:shadow-xs transition flex flex-col justify-between"
+              >
+                <div className="text-[11px] font-mono font-medium text-slate-400">
+                  DDC {cat.ddcPrefix}
+                </div>
+                <div className="mt-2">
+                  <h3 className="font-serif text-sm font-bold text-slate-900">
+                    {cat.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {cat.booksCount || 1} {cat.booksCount === 1 ? "holding" : "holdings"}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </section>
 
-        {/* Curated Row 2: Popular in Circulation */}
-        <CuratedBookRow
-          title="Frequently Borrowed Titles"
-          subtitle="Current active loans, reference texts, and student circulation"
-          viewAllLink="/search?sort=relevance"
-          books={curated.popular}
-        />
-
-        {/* Curated Row 3: Recently Added Stacks */}
-        <CuratedBookRow
-          title="Recent Additions to the Stacks"
-          subtitle="New accessions and editions verified in the physical inventory"
-          viewAllLink="/search?sort=newest"
-          books={curated.recentlyAdded}
-        />
-
-        {/* 4. Library Timings, Rules & Reading Hall Banner */}
-        <section className="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 shadow-xs">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            <div className="md:col-span-2 space-y-2.5">
-              <span className="text-[11px] font-bold text-teal-700 uppercase tracking-wider">
+        {/* Clean Library Visiting Card */}
+        <section className="bg-slate-50 rounded-2xl border border-slate-200/80 p-6 sm:p-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-teal-800 uppercase tracking-wider">
                 Visit the Physical Library
               </span>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                Public Reading Hall & Digital Reference Terminals
+              <h3 className="font-serif text-xl font-bold text-slate-900">
+                Reading Hall &amp; Circulation Desk
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Open to all citizens Monday through Saturday, 08:00 AM – 08:00 PM. Access high-speed National Knowledge Network terminals, reference encyclopedias, and quiet study alcoves.
+              <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+                Open to all citizens Monday to Saturday (08:00 AM – 08:00 PM). Free public entry, quiet study alcoves, and book circulation.
               </p>
-              <div className="flex flex-wrap items-center gap-4 pt-1.5 text-xs text-slate-600">
+              <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-slate-600 font-medium">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Free Public Entry</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Free Citizen Access</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Borrow up to 8 books</span>
+                  <Clock className="w-4 h-4 text-slate-400" />
+                  <span>Mon – Sat: 08:00 AM – 08:00 PM</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Online Reservations</span>
+                  <MapPin className="w-4 h-4 text-slate-400" />
+                  <span>CGO Complex, New Delhi</span>
                 </span>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-5 rounded-lg border border-slate-200 space-y-2.5 text-center md:text-left">
-              <h4 className="text-sm font-bold text-slate-900">
-                Membership Cards
-              </h4>
-              <p className="text-xs text-slate-500">
-                Register online or visit our circulation desk with government ID for instant issuance.
-              </p>
-              <div className="pt-1">
-                <Link
-                  href="/library-information#membership"
-                  className="inline-flex items-center justify-center w-full py-2 px-3 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-medium transition"
-                >
-                  Membership Rules & Quotas
-                </Link>
-              </div>
-            </div>
+            <Link
+              href="/library-information"
+              className="px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-semibold shadow-xs transition shrink-0"
+            >
+              Library Info &amp; Rules
+            </Link>
           </div>
         </section>
       </div>

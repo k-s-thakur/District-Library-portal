@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { getBookDetails } from "@/lib/services/catalogue.service";
 import ReservationButton from "./ReservationButton";
+import DynamicBookCover from "@/components/DynamicBookCover";
 
 export const dynamic = "force-dynamic";
 
@@ -84,25 +85,22 @@ export default async function BookDetailPage({
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-8 items-start">
           {/* Col 1: Book Cover Presentation (4 Cols) */}
           <div className="md:col-span-1 lg:col-span-4 space-y-4">
-            <div className="relative aspect-[2/3] w-full max-w-[320px] mx-auto rounded-xl overflow-hidden book-shadow border border-slate-200/80 bg-slate-100">
-              {book.coverImageUrl ? (
-                <img
-                  src={book.coverImageUrl}
-                  alt={book.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full p-6 flex flex-col justify-between bg-gradient-to-br from-teal-900 to-slate-900 text-white">
-                  <span className="text-xs uppercase font-bold text-teal-300">
-                    {book.category?.name || "Library Holding"}
-                  </span>
-                  <div>
-                    <h3 className="font-serif text-xl font-bold leading-tight">{book.title}</h3>
-                    <p className="text-sm text-teal-200 mt-2">{book.authorsString}</p>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">Government Public Library</span>
-                </div>
-              )}
+            <div className="relative aspect-[2/3] w-full max-w-[320px] mx-auto rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-slate-300/80 bg-slate-900">
+              <DynamicBookCover
+                id={book.id}
+                isbn={book.isbn}
+                title={book.title}
+                subtitle={book.subtitle}
+                authors={book.authorsString || book.authors}
+                category={book.category}
+                publisher={book.publisher?.name || book.publisher}
+                edition={book.edition}
+                publicationYear={book.publicationYear}
+                language={book.language}
+                ddcCode={book.ddcCode}
+                size="lg"
+                className="w-full h-full"
+              />
             </div>
 
             {/* Quick Action: Reservation */}

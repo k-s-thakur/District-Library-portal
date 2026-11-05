@@ -2,43 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   BookOpen,
   Users,
   Clock,
   IndianRupee,
-  Plus,
   ChevronDown,
   ArrowRight,
   RotateCcw,
   UserPlus,
   TrendingUp,
-  Search,
-  Building2,
-  FileText,
+  LayoutDashboard,
 } from "lucide-react";
 import { useStaff } from "@/context/StaffContext";
 
 export default function StaffOverviewPage() {
-  const router = useRouter();
   const { setTransactionModalOpen } = useStaff();
   const [timeFilter, setTimeFilter] = useState("Today");
   const [activityFilter, setActivityFilter] = useState("Today");
-  const [omniSearch, setOmniSearch] = useState("");
-
-  const handleOmniSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = omniSearch.trim();
-    if (!q) return;
-    if (q.toUpperCase().startsWith("MBR-") || q.toLowerCase().includes("member")) {
-      router.push(`/staff/members?q=${encodeURIComponent(q)}`);
-    } else if (q.toUpperCase().startsWith("RCP-") || q.toLowerCase().includes("receipt") || q.toLowerCase().includes("fine")) {
-      router.push(`/staff/finance?q=${encodeURIComponent(q)}`);
-    } else {
-      router.push(`/staff/catalogue?q=${encodeURIComponent(q)}`);
-    }
-  };
 
   // Clean Chart Data Points
   const chartPoints = [
@@ -78,7 +59,7 @@ export default function StaffOverviewPage() {
       member: "MBR-2023-3904 (Sunita Rao)",
       time: "09:42 AM",
       icon: RotateCcw,
-      badgeColor: "bg-teal-50 text-teal-700 border-teal-200",
+      badgeColor: "bg-[#e2f6ee] text-[#0d7a55] border-emerald-200",
     },
     {
       id: "act-2",
@@ -104,181 +85,73 @@ export default function StaffOverviewPage() {
 
   return (
     <div className="space-y-6">
-      {/* 1. OPAC-Style Command Hero Banner */}
-      <section className="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-sm relative overflow-hidden">
-        <div className="max-w-3xl mx-auto text-center space-y-3.5 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs font-medium text-teal-300">
-            <Building2 className="w-3.5 h-3.5 text-teal-400" />
-            <span>District Public Library · Staff Operations & Admin Console</span>
+      {/* District Public Library Management Dashboard Banner (Matching Uploaded Image) */}
+      <div className="relative rounded-2xl overflow-hidden shadow-xs border border-emerald-950/20">
+        <img
+          src="/images/library-banner.png"
+          alt="District Public Library - Library Management Dashboard"
+          className="w-full h-auto min-h-[85px] max-h-[135px] object-cover object-left block"
+        />
+        {/* Floating Time Filter Selector on top-right */}
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden sm:block">
+          <div className="relative">
+            <select
+              value={timeFilter}
+              onChange={(e) => setTimeFilter(e.target.value)}
+              className="appearance-none bg-slate-900/80 hover:bg-slate-900 text-white border border-white/20 text-xs font-medium pl-3.5 pr-8 py-1.5 rounded-full focus:outline-emerald-400 cursor-pointer shadow-md backdrop-blur-xs transition"
+            >
+              <option value="Today">Today</option>
+              <option value="This week">This week</option>
+              <option value="This month">This month</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-300 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
-
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-serif text-white">
-            Library Operations & Circulation Command
-          </h1>
-
-          <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-normal">
-            Manage accession catalog, member directory, real-time physical issue & return circulation, and daily government receipts.
-          </p>
-
-          {/* Quick Omni Search Bar (Matching OPAC Hero) */}
-          <form
-            onSubmit={handleOmniSearch}
-            className="flex flex-col sm:flex-row items-center gap-2 max-w-2xl mx-auto bg-white p-1.5 rounded-xl border border-slate-200 text-slate-900 shadow-sm mt-2"
-          >
-            <div className="flex items-center gap-2.5 flex-1 w-full px-3">
-              <Search className="w-4 h-4 text-slate-400 shrink-0" />
-              <input
-                type="text"
-                value={omniSearch}
-                onChange={(e) => setOmniSearch(e.target.value)}
-                placeholder="Search catalog by ISBN/Title, members by Card No, or receipts..."
-                className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 py-2 outline-none font-medium"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full sm:w-auto px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-medium rounded-lg text-sm transition shrink-0 cursor-pointer"
-            >
-              Action / Search
-            </button>
-          </form>
-
-          {/* Quick Action Pills (Matching OPAC Popular Searches) */}
-          <div className="flex items-center justify-center gap-2 flex-wrap text-xs text-slate-300 pt-1">
-            <span className="text-slate-400 text-[11px]">Quick actions:</span>
-            <button
-              onClick={() => setTransactionModalOpen(true)}
-              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 cursor-pointer text-teal-300 font-medium"
-            >
-              <Plus className="w-3 h-3" />
-              <span>Issue Book</span>
-            </button>
-            <button
-              onClick={() => setTransactionModalOpen(true)}
-              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 cursor-pointer text-slate-300"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Return Book</span>
-            </button>
-            <Link
-              href="/staff/members"
-              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
-            >
-              <UserPlus className="w-3 h-3" />
-              <span>Register Member</span>
-            </Link>
-            <Link
-              href="/staff/catalogue"
-              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
-            >
-              <BookOpen className="w-3 h-3" />
-              <span>Catalogue</span>
-            </Link>
-            <Link
-              href="/staff/finance"
-              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
-            >
-              <IndianRupee className="w-3 h-3" />
-              <span>Collect Dues</span>
-            </Link>
-            <Link
-              href="/staff/reports"
-              className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700 text-[11px] transition inline-flex items-center gap-1.5 text-slate-300"
-            >
-              <FileText className="w-3 h-3" />
-              <span>Audit Reports</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Overview Sub-header with Time Filter */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <div>
-          <h2 className="text-base font-bold text-slate-900 tracking-tight">Key Operational Metrics</h2>
-          <p className="text-xs text-slate-500">Live indicators across physical inventory and circulation</p>
-        </div>
-        <div className="relative">
-          <select
-            value={timeFilter}
-            onChange={(e) => setTimeFilter(e.target.value)}
-            className="appearance-none bg-white border border-slate-200 hover:border-slate-300 text-slate-700 text-xs font-medium pl-3 pr-7 py-1.5 rounded-lg focus:outline-teal-600 cursor-pointer shadow-xs"
-          >
-            <option>Today</option>
-            <option>This week</option>
-            <option>This month</option>
-          </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
       {/* 2. Top 4 Essential KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1 */}
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>Catalogue Titles</span>
-            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
-              <BookOpen className="w-3.5 h-3.5 text-teal-700" />
-            </div>
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-[#e6f7f0] text-[#0d7a55] flex items-center justify-center shrink-0">
+            <BookOpen className="w-5 h-5" />
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-bold text-slate-900 tabular-nums">8,426</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-teal-700 font-semibold">+174</span>
-              <span>new this month</span>
-            </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 tabular-nums leading-tight">8,426</div>
+            <div className="text-xs text-slate-500 mt-0.5">Catalogue Titles</div>
           </div>
         </div>
 
         {/* KPI 2 */}
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>Active Members</span>
-            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
-              <Users className="w-3.5 h-3.5 text-teal-700" />
-            </div>
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-[#e8f2fe] text-[#2563eb] flex items-center justify-center shrink-0">
+            <Users className="w-5 h-5" />
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-bold text-slate-900 tabular-nums">3,218</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-teal-700 font-semibold">+38</span>
-              <span>registered recently</span>
-            </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 tabular-nums leading-tight">3,218</div>
+            <div className="text-xs text-slate-500 mt-0.5">Active Members</div>
           </div>
         </div>
 
         {/* KPI 3 */}
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>Books on Loan</span>
-            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
-              <Clock className="w-3.5 h-3.5 text-amber-600" />
-            </div>
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-[#fef3c7] text-[#d97706] flex items-center justify-center shrink-0">
+            <Clock className="w-5 h-5" />
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-bold text-slate-900 tabular-nums">1,084</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-amber-700 font-semibold">32</span>
-              <span>due this week</span>
-            </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 tabular-nums leading-tight">1,084</div>
+            <div className="text-xs text-slate-500 mt-0.5">Books on Loan</div>
           </div>
         </div>
 
         {/* KPI 4 */}
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>Collections Today</span>
-            <div className="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center">
-              <IndianRupee className="w-3.5 h-3.5 text-emerald-700" />
-            </div>
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-[#e6f7f0] text-[#0d7a55] flex items-center justify-center shrink-0">
+            <IndianRupee className="w-5 h-5" />
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-bold text-slate-900 tabular-nums">₹ 2,840</div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-              <span className="text-emerald-700 font-semibold">18 receipts</span>
-              <span>posted</span>
-            </div>
+          <div>
+            <div className="text-2xl font-bold text-slate-900 tabular-nums leading-tight">₹ 2,840</div>
+            <div className="text-xs text-slate-500 mt-0.5">Collections Today</div>
           </div>
         </div>
       </div>
@@ -286,7 +159,7 @@ export default function StaffOverviewPage() {
       {/* 3. Middle 2 Panels (Activity & Inventory) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left: Library Activity Chart (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <div>
@@ -299,19 +172,19 @@ export default function StaffOverviewPage() {
                 <select
                   value={activityFilter}
                   onChange={(e) => setActivityFilter(e.target.value)}
-                  className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium pl-2.5 pr-6 py-1 rounded-md focus:outline-teal-600 cursor-pointer"
+                  className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium pl-3 pr-7 py-1.5 rounded-full focus:outline-[#0d7a55] cursor-pointer shadow-xs"
                 >
                   <option>Today</option>
                   <option>This week</option>
                 </select>
-                <ChevronDown className="w-3 h-3 text-slate-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-2xl font-bold text-slate-900 tabular-nums">146</span>
               <span className="text-xs font-normal text-slate-500">transactions</span>
-              <span className="text-xs text-teal-700 font-medium flex items-center gap-0.5 ml-2">
+              <span className="text-xs text-[#0d7a55] font-medium flex items-center gap-0.5 ml-2">
                 <TrendingUp className="w-3.5 h-3.5" /> +12.8%
               </span>
             </div>
@@ -357,7 +230,7 @@ export default function StaffOverviewPage() {
               <path
                 d={issuesPath}
                 fill="none"
-                stroke="#0f766e"
+                stroke="#0d7a55"
                 strokeWidth="2"
               />
 
@@ -367,7 +240,7 @@ export default function StaffOverviewPage() {
                     cx={getX(i)}
                     cy={getY(p.issues)}
                     r="3.5"
-                    fill="#0f766e"
+                    fill="#0d7a55"
                   />
                   <circle
                     cx={getX(i)}
@@ -394,7 +267,7 @@ export default function StaffOverviewPage() {
           <div className="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100 mt-2">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-teal-700" />
+                <span className="w-2 h-2 rounded-full bg-[#0d7a55]" />
                 <span className="text-[11px] font-medium text-slate-700">Issues</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -407,7 +280,7 @@ export default function StaffOverviewPage() {
         </div>
 
         {/* Right: Copy Status */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <div>
@@ -434,7 +307,7 @@ export default function StaffOverviewPage() {
 
             {/* Segmented Progress Bar */}
             <div className="w-full h-2.5 rounded-full bg-slate-100 flex overflow-hidden mt-4">
-              <div style={{ width: "58%" }} className="bg-teal-700" title="Available: 7,354" />
+              <div style={{ width: "58%" }} className="bg-[#0d7a55]" title="Available: 7,354" />
               <div style={{ width: "31%" }} className="bg-blue-600" title="Issued: 3,934" />
               <div style={{ width: "6%" }} className="bg-amber-500" title="Reserved: 750" />
               <div style={{ width: "5%" }} className="bg-slate-400" title="Other: 642" />
@@ -444,7 +317,7 @@ export default function StaffOverviewPage() {
             <div className="mt-5 space-y-2 text-xs">
               <div className="flex items-center justify-between py-1 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-teal-700" />
+                  <span className="w-2 h-2 rounded-full bg-[#0d7a55]" />
                   <span className="text-slate-700 font-medium">Available on Shelves</span>
                 </div>
                 <span className="font-semibold text-slate-900 font-mono">7,354</span>
@@ -479,7 +352,7 @@ export default function StaffOverviewPage() {
           <div className="pt-3 border-t border-slate-100 mt-4">
             <Link
               href="/staff/catalogue"
-              className="w-full flex items-center justify-between text-xs font-medium text-teal-700 hover:text-teal-800 transition"
+              className="w-full flex items-center justify-between text-xs font-semibold text-[#0d7a55] hover:text-[#0a6344] transition"
             >
               <span>Manage stack inventory</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -489,7 +362,7 @@ export default function StaffOverviewPage() {
       </div>
 
       {/* 4. Bottom Section: Recent Operations */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div>
             <h3 className="text-sm font-bold text-slate-900">
@@ -499,7 +372,7 @@ export default function StaffOverviewPage() {
           </div>
           <Link
             href="/staff/circulation"
-            className="flex items-center gap-1 text-xs text-teal-700 hover:text-teal-800 font-medium transition"
+            className="flex items-center gap-1 text-xs text-[#0d7a55] hover:text-[#0a6344] font-semibold transition"
           >
             <span>Circulation Desk</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -513,13 +386,13 @@ export default function StaffOverviewPage() {
             return (
               <div
                 key={act.id}
-                className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 px-1 rounded-lg transition"
+                className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 px-1 rounded-xl transition"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${act.badgeColor}`}
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border ${act.badgeColor}`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className="w-4 h-4" />
                   </div>
                   <div className="truncate">
                     <p className="text-xs font-semibold text-slate-900 leading-tight">

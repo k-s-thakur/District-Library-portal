@@ -132,34 +132,15 @@ export default function ThemeSwitcher() {
         aria-expanded={open}
         aria-haspopup="true"
         title={`Current Theme: ${current.name} (${current.sourceDoc})`}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 bg-white/90 hover:bg-slate-50 transition shadow-xs text-xs font-semibold text-slate-800 cursor-pointer"
+        className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 bg-white hover:bg-slate-50 transition shadow-xs text-xs font-medium text-slate-700 cursor-pointer"
       >
-        <span className="flex items-center gap-1.5">
-          <Palette className="w-3.5 h-3.5 text-teal-700" />
-          <span className="hidden sm:inline">Theme:</span>
-          <span className="font-bold text-teal-700 truncate max-w-[110px]">
-            {current.name.split(" ")[0]}
-          </span>
+        <span className="text-slate-400 text-xs">Theme:</span>
+        <span className="text-amber-500 text-xs">☀️</span>
+        <span className="font-semibold text-slate-800 truncate max-w-[85px]">
+          {activeTheme === "corky" ? "Corky's" : current.name.split(" ")[0]}
         </span>
-
-        {/* 3 Swatch Dots */}
-        <span className="flex items-center -space-x-1">
-          <span
-            className="w-2.5 h-2.5 rounded-full border border-white shadow-xs"
-            style={{ backgroundColor: current.palette.primary }}
-          />
-          <span
-            className="w-2.5 h-2.5 rounded-full border border-white shadow-xs"
-            style={{ backgroundColor: current.palette.accent }}
-          />
-          <span
-            className="w-2.5 h-2.5 rounded-full border border-slate-300 shadow-xs"
-            style={{ backgroundColor: current.palette.bg }}
-          />
-        </span>
-
         <ChevronDown
-          className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+          className={`w-3 h-3 text-slate-400 transition-transform duration-200 ml-0.5 ${
             open ? "rotate-180" : ""
           }`}
         />
